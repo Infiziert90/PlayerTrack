@@ -17,7 +17,7 @@ public class SocialListService
         Plugin.PluginLog.Verbose($"Entering SocialListService.HandleMembersList: {listType}");
 
         // get content id
-        var localPlayerContentId = Plugin.ClientStateHandler.LocalContentId;
+        var localPlayerContentId = Plugin.PlayerState.ContentId;
         if (localPlayerContentId == 0)
         {
             Plugin.PluginLog.Warning("HandleMembersList: LocalContentId is 0");

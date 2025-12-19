@@ -24,6 +24,8 @@ public class Plugin : IDalamudPlugin
     [PluginService] public static ICondition ConditionHandler { get; private set; } = null!;
     [PluginService] public static IObjectTable ObjectCollection { get; private set; } = null!;
     [PluginService] public static IClientState ClientStateHandler { get; private set; } = null!;
+    [PluginService] public static IPlayerState PlayerState { get; private set; } = null!;
+    [PluginService] public static IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static IChatGui ChatGuiHandler { get; private set; } = null!;
     [PluginService] public static IFramework GameFramework { get; private set; } = null!;
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;

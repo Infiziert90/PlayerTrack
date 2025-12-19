@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Dalamud.Game.ClientState.Objects;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 

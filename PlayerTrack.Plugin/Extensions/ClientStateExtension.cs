@@ -15,15 +15,15 @@ public static class ClientStateExtension
     /// <returns>Indicator if player character is valid.</returns>
     public static LocalPlayerData? GetLocalPlayer(this IClientState value)
     {
-        if (value.LocalPlayer == null)
+        if (!Plugin.PlayerState.IsLoaded || Plugin.ObjectTable.LocalPlayer == null)
             return null;
 
         var localPlayer = new LocalPlayerData
         {
-            Name = value.LocalPlayer.Name.TextValue,
-            HomeWorld = value.LocalPlayer.HomeWorld.RowId,
-            ContentId = value.LocalContentId,
-            Customize = value.LocalPlayer.Customize,
+            Name = Plugin.PlayerState.CharacterName,
+            HomeWorld = Plugin.PlayerState.HomeWorld.RowId,
+            ContentId = Plugin.PlayerState.ContentId,
+            Customize = Plugin.ObjectTable.LocalPlayer.Customize,
         };
 
         return localPlayer.IsValid() ? localPlayer : null;

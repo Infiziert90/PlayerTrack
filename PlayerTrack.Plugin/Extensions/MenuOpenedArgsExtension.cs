@@ -35,10 +35,10 @@ public static class MenuOpenedArgsExtensions
             case "BeginnerChatList":
                 if (menuTargetDefault.TargetName != string.Empty && Sheets.IsValidWorld(menuTargetDefault.TargetHomeWorld.RowId))
                 {
-                    if (!includeSelf)
+                    if (!includeSelf && Plugin.PlayerState.IsLoaded)
                     {
-                        var name = Plugin.ClientStateHandler.LocalPlayer?.Name.TextValue;
-                        var worldId = Plugin.ClientStateHandler.LocalPlayer?.HomeWorld.RowId;
+                        var name = Plugin.PlayerState.CharacterName;
+                        var worldId = Plugin.PlayerState.HomeWorld.RowId;
                         if (menuTargetDefault.TargetName == name && menuTargetDefault.TargetHomeWorld.RowId == worldId)
                         {
                             Plugin.PluginLog.Verbose("ContextMenu: Self context menu.");
