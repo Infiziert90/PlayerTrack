@@ -50,4 +50,863 @@
     <data name="Backups" xml:space="preserve">
         <value>バックアップ</value>
     </data>
+    <data name="AdvancedMatchingExplanation" xml:space="preserve">
+        <value>検索を絞り込むには次の記号を使ってください：</value>
+    </data>
+    <data name="AdvancedMatchingExplanationContains" xml:space="preserve">
+        <value>*text*：'text' を含む項目を検索します。</value>
+    </data>
+    <data name="AdvancedMatchingExplanationEnd" xml:space="preserve">
+        <value>*text：末尾が 'text' で終わる項目を検索します。</value>
+    </data>
+    <data name="AdvancedMatchingExplanationExact" xml:space="preserve">
+        <value>text：完全一致で検索します。</value>
+    </data>
+    <data name="AdvancedMatchingExplanationExclude" xml:space="preserve">
+        <value>!text：'text' を含むものを除外します。</value>
+    </data>
+    <data name="AdvancedMatchingExplanationStart" xml:space="preserve">
+        <value>text*：先頭が 'text' で始まる項目を検索します。</value>
+    </data>
+    <data name="AdvancedMatchingTitle" xml:space="preserve">
+        <value>特殊コマンドの高度な検索</value>
+    </data>
+    <data name="Banned" xml:space="preserve">
+        <value>出入り禁止</value>
+    </data>
+    <data name="BlackList" xml:space="preserve">
+        <value>ブラックリスト</value>
+    </data>
+    <data name="BlackList_Abbreviation" xml:space="preserve">
+        <value>BL</value>
+    </data>
+    <data name="Blocked" xml:space="preserve">
+        <value>ブロック済み</value>
+    </data>
+    <data name="Bottom" xml:space="preserve">
+        <value>下</value>
+    </data>
+    <data name="Byte" xml:space="preserve">
+        <value>B</value>
+    </data>
+    <data name="CWLS" xml:space="preserve">
+        <value>CWLS</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>キャンセル</value>
+    </data>
+    <data name="Cancelled" xml:space="preserve">
+        <value>キャンセル済み</value>
+    </data>
+    <data name="Categories" xml:space="preserve">
+        <value>カテゴリ</value>
+    </data>
+    <data name="CategoryName" xml:space="preserve">
+        <value>カテゴリ名</value>
+    </data>
+    <data name="CategorySpecificSetting" xml:space="preserve">
+        <value>カテゴリ {0} から継承</value>
+    </data>
+    <data name="ClosePlayer" xml:space="preserve">
+        <value>プレイヤーを閉じる</value>
+    </data>
+    <data name="CombineWindows" xml:space="preserve">
+        <value>ウィンドウを結合</value>
+    </data>
+    <data name="ConfirmDelete" xml:space="preserve">
+        <value>削除しますか？</value>
+    </data>
+    <data name="ConfirmUnsync" xml:space="preserve">
+        <value>同期したカテゴリが削除されます。よろしいですか？</value>
+    </data>
+    <data name="Confirmation" xml:space="preserve">
+        <value>確認</value>
+    </data>
+    <data name="ConfirmationQuestion" xml:space="preserve">
+        <value>この操作を実行してもよろしいですか？</value>
+    </data>
+    <data name="Contains" xml:space="preserve">
+        <value>含む</value>
+    </data>
+    <data name="Content" xml:space="preserve">
+        <value>コンテンツ</value>
+    </data>
+    <data name="ContextMenu" xml:space="preserve">
+        <value>コンテキストメニュー</value>
+    </data>
+    <data name="Contribute" xml:space="preserve">
+        <value>支援する</value>
+    </data>
+    <data name="ContributionUsage" xml:space="preserve">
+        <value>ご支援は主にサーバー費用とコーヒー代の補填に充てられます。</value>
+    </data>
+    <data name="CopyToClipboard" xml:space="preserve">
+        <value>クリップボードにコピー</value>
+    </data>
+    <data name="Created" xml:space="preserve">
+        <value>作成日時</value>
+    </data>
+    <data name="CrossWorldLinkShell" xml:space="preserve">
+        <value>ワールド間リンクシェル</value>
+    </data>
+    <data name="CrossWorldLinkShell_Abbreviation" xml:space="preserve">
+        <value>CWLS</value>
+    </data>
+    <data name="CrowdinProject" xml:space="preserve">
+        <value>Crowdin にプロジェクトを用意したので、興味のある方はご参加ください。</value>
+    </data>
+    <data name="CurrentPlayers" xml:space="preserve">
+        <value>現在のプレイヤー</value>
+    </data>
+    <data name="CustomTitle" xml:space="preserve">
+        <value>カスタムタイトル</value>
+    </data>
+    <data name="Data" xml:space="preserve">
+        <value>データ</value>
+    </data>
+    <data name="Day" xml:space="preserve">
+        <value>日</value>
+    </data>
+    <data name="DefaultCategory" xml:space="preserve">
+        <value>既定のカテゴリ</value>
+    </data>
+    <data name="DefaultSetting" xml:space="preserve">
+        <value>プレイヤーの既定値から継承</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>削除</value>
+    </data>
+    <data name="DeleteEncounters" xml:space="preserve">
+        <value>遭遇記録を削除</value>
+    </data>
+    <data name="DeleteHistory" xml:space="preserve">
+        <value>履歴を削除</value>
+    </data>
+    <data name="DeletePlayerSettings" xml:space="preserve">
+        <value>プレイヤー設定を削除</value>
+    </data>
+    <data name="DeletePlayers" xml:space="preserve">
+        <value>プレイヤーを削除</value>
+    </data>
+    <data name="DeleteRecordsInProgress" xml:space="preserve">
+        <value>レコードを削除しています…</value>
+    </data>
+    <data name="DeleteRecordsSuccess" xml:space="preserve">
+        <value>レコードの削除が完了しました。</value>
+    </data>
+    <data name="DiscordRoleInfo" xml:space="preserve">
+        <value>Discord に参加して「Translator」ロールを選ぶと詳細をご確認いただけます。</value>
+    </data>
+    <data name="Display" xml:space="preserve">
+        <value>表示</value>
+    </data>
+    <data name="DonationsAppreciated" xml:space="preserve">
+        <value>寄付は歓迎しますが、決して必須ではありません。</value>
+    </data>
+    <data name="DuplicatePlayerError" xml:space="preserve">
+        <value>このプレイヤーはすでに登録されています。</value>
+    </data>
+    <data name="Duration" xml:space="preserve">
+        <value>期間</value>
+    </data>
+    <data name="Encounters" xml:space="preserve">
+        <value>遭遇記録</value>
+    </data>
+    <data name="Exact" xml:space="preserve">
+        <value>完全一致</value>
+    </data>
+    <data name="ExaminePlayer" xml:space="preserve">
+        <value>プレイヤーを調べる</value>
+    </data>
+    <data name="ExamplesExplanation" xml:space="preserve">
+        <value>使い方の例をいくつかご紹介します：</value>
+    </data>
+    <data name="ExamplesExplanation1" xml:space="preserve">
+        <value>notes:! =&gt; メモのないプレイヤーを検索します。</value>
+    </data>
+    <data name="ExamplesExplanation2" xml:space="preserve">
+        <value>notes:* =&gt; 何らかのメモがあるプレイヤーを検索します。</value>
+    </data>
+    <data name="ExamplesExplanation3" xml:space="preserve">
+        <value>fc:uwu =&gt; フリーカンパニー「uwu」に所属するプレイヤーを検索します。</value>
+    </data>
+    <data name="ExamplesTitle" xml:space="preserve">
+        <value>使用例</value>
+    </data>
+    <data name="Execute" xml:space="preserve">
+        <value>実行</value>
+    </data>
+    <data name="FL_BL_FC" xml:space="preserve">
+        <value>FL/BL/FC</value>
+    </data>
+    <data name="Failed" xml:space="preserve">
+        <value>失敗</value>
+    </data>
+    <data name="Female" xml:space="preserve">
+        <value>女性</value>
+    </data>
+    <data name="FirstSeen" xml:space="preserve">
+        <value>初回記録</value>
+    </data>
+    <data name="FocusTargetPlayer" xml:space="preserve">
+        <value>プレイヤーをフォーカスターゲットに</value>
+    </data>
+    <data name="ForDevelopersTitle" xml:space="preserve">
+        <value>開発者向け</value>
+    </data>
+    <data name="ForEveryoneTitle" xml:space="preserve">
+        <value>すべての方へ</value>
+    </data>
+    <data name="ForTranslatorsTitle" xml:space="preserve">
+        <value>翻訳者向け</value>
+    </data>
+    <data name="FreeCompany" xml:space="preserve">
+        <value>フリーカンパニー</value>
+    </data>
+    <data name="FreeCompany_Abbreviation" xml:space="preserve">
+        <value>FC</value>
+    </data>
+    <data name="FriendList" xml:space="preserve">
+        <value>フレンドリスト</value>
+    </data>
+    <data name="FriendList_Abbreviation" xml:space="preserve">
+        <value>FL</value>
+    </data>
+    <data name="FromNow" xml:space="preserve">
+        <value>今から</value>
+    </data>
+    <data name="General" xml:space="preserve">
+        <value>全般</value>
+    </data>
+    <data name="Gigabyte" xml:space="preserve">
+        <value>GB</value>
+    </data>
+    <data name="Help" xml:space="preserve">
+        <value>ヘルプ</value>
+    </data>
+    <data name="HelpWithTranslation" xml:space="preserve">
+        <value>PlayerTrack の翻訳を投稿したり校正したりして支援できます。</value>
+    </data>
+    <data name="HighEndContent" xml:space="preserve">
+        <value>高難易度コンテンツ</value>
+    </data>
+    <data name="History" xml:space="preserve">
+        <value>履歴</value>
+    </data>
+    <data name="Homeworld" xml:space="preserve">
+        <value>ホームワールド</value>
+    </data>
+    <data name="Hour" xml:space="preserve">
+        <value>時間</value>
+    </data>
+    <data name="HowToSearchExplanation" xml:space="preserve">
+        <value>名前検索や各種コマンドで絞り込みができます。</value>
+    </data>
+    <data name="HowToSearchTitle" xml:space="preserve">
+        <value>検索方法</value>
+    </data>
+    <data name="Icon" xml:space="preserve">
+        <value>アイコン</value>
+    </data>
+    <data name="Icons" xml:space="preserve">
+        <value>アイコン</value>
+    </data>
+    <data name="Inherit" xml:space="preserve">
+        <value>継承</value>
+    </data>
+    <data name="Integrations" xml:space="preserve">
+        <value>連携機能</value>
+    </data>
+    <data name="InvalidNameError" xml:space="preserve">
+        <value>有効な名前を入力してください。</value>
+    </data>
+    <data name="Job" xml:space="preserve">
+        <value>ジョブ</value>
+    </data>
+    <data name="KeepEncounters" xml:space="preserve">
+        <value>遭遇記録を保持</value>
+    </data>
+    <data name="KeepEncountersFromLast90Days" xml:space="preserve">
+        <value>直近90日分</value>
+    </data>
+    <data name="KeepEncountersInHighEndContent" xml:space="preserve">
+        <value>高難易度コンテンツ</value>
+    </data>
+    <data name="KeepEncountersInNormalContent" xml:space="preserve">
+        <value>通常コンテンツ</value>
+    </data>
+    <data name="KeepEncountersInOverworld" xml:space="preserve">
+        <value>フィールド</value>
+    </data>
+    <data name="KeepPlayerSettings" xml:space="preserve">
+        <value>プレイヤー設定を保持</value>
+    </data>
+    <data name="KeepPlayers" xml:space="preserve">
+        <value>プレイヤーを保持</value>
+    </data>
+    <data name="KeepPlayersSeenInLast90Days" xml:space="preserve">
+        <value>過去90日以内に確認</value>
+    </data>
+    <data name="KeepPlayersWithAnySettings" xml:space="preserve">
+        <value>何らかの設定あり</value>
+    </data>
+    <data name="KeepPlayersWithCategories" xml:space="preserve">
+        <value>カテゴリあり</value>
+    </data>
+    <data name="KeepPlayersWithEncounters" xml:space="preserve">
+        <value>遭遇記録あり</value>
+    </data>
+    <data name="KeepPlayersWithNotes" xml:space="preserve">
+        <value>メモあり</value>
+    </data>
+    <data name="KeepSettingsForPlayersSeenInLast90Days" xml:space="preserve">
+        <value>過去90日以内に確認</value>
+    </data>
+    <data name="KeepSettingsForPlayersWithAnySettings" xml:space="preserve">
+        <value>何らかの設定あり</value>
+    </data>
+    <data name="KeepSettingsForPlayersWithCategories" xml:space="preserve">
+        <value>カテゴリあり</value>
+    </data>
+    <data name="KeepSettingsForPlayersWithEncounters" xml:space="preserve">
+        <value>遭遇記録あり</value>
+    </data>
+    <data name="KeepSettingsForPlayersWithNotes" xml:space="preserve">
+        <value>メモあり</value>
+    </data>
+    <data name="Kilobyte" xml:space="preserve">
+        <value>KB</value>
+    </data>
+    <data name="LS" xml:space="preserve">
+        <value>LS</value>
+    </data>
+    <data name="LargeFeatureDiscussion" xml:space="preserve">
+        <value>大規模な機能追加をご検討の際は、事前にご相談ください。</value>
+    </data>
+    <data name="LastLocation" xml:space="preserve">
+        <value>直近の場所</value>
+    </data>
+    <data name="LastSeen" xml:space="preserve">
+        <value>最終確認</value>
+    </data>
+    <data name="LastUpdated" xml:space="preserve">
+        <value>最終更新</value>
+    </data>
+    <data name="LastUpdatedNever" xml:space="preserve">
+        <value>なし</value>
+    </data>
+    <data name="Level" xml:space="preserve">
+        <value>Lv</value>
+    </data>
+    <data name="LinkShell" xml:space="preserve">
+        <value>リンクシェル</value>
+    </data>
+    <data name="LinkShell_Abbreviation" xml:space="preserve">
+        <value>LS</value>
+    </data>
+    <data name="LocalPlayers" xml:space="preserve">
+        <value>自キャラクター</value>
+    </data>
+    <data name="Location" xml:space="preserve">
+        <value>場所</value>
+    </data>
+    <data name="Locations" xml:space="preserve">
+        <value>場所</value>
+    </data>
+    <data name="LockWindowPosition" xml:space="preserve">
+        <value>ウィンドウ位置を固定</value>
+    </data>
+    <data name="LockWindowSize" xml:space="preserve">
+        <value>ウィンドウサイズを固定</value>
+    </data>
+    <data name="Lodestone" xml:space="preserve">
+        <value>Lodestone</value>
+    </data>
+    <data name="LodestoneLocale" xml:space="preserve">
+        <value>Lodestone 言語設定</value>
+    </data>
+    <data name="Male" xml:space="preserve">
+        <value>男性</value>
+    </data>
+    <data name="Manual" xml:space="preserve">
+        <value>手動</value>
+    </data>
+    <data name="Megabyte" xml:space="preserve">
+        <value>MB</value>
+    </data>
+    <data name="Merge" xml:space="preserve">
+        <value>統合</value>
+    </data>
+    <data name="MergePlayers" xml:space="preserve">
+        <value>プレイヤーを統合</value>
+    </data>
+    <data name="MergePlayersDupe" xml:space="preserve">
+        <value>同一プレイヤー同士を統合することはできません。</value>
+    </data>
+    <data name="MergePlayersInstructions" xml:space="preserve">
+        <value>統合したいプレイヤーを選択してください。メモ・遭遇記録・履歴が引き継がれます。</value>
+    </data>
+    <data name="Minute" xml:space="preserve">
+        <value>分</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>名前</value>
+    </data>
+    <data name="NameChangeAlert" xml:space="preserve">
+        <value>改名アラート</value>
+    </data>
+    <data name="NameColor" xml:space="preserve">
+        <value>名前の色</value>
+    </data>
+    <data name="NameWorld" xml:space="preserve">
+        <value>名前@ワールド</value>
+    </data>
+    <data name="Nameplate" xml:space="preserve">
+        <value>ネームプレート</value>
+    </data>
+    <data name="NameplateColor" xml:space="preserve">
+        <value>ネームプレートの色</value>
+    </data>
+    <data name="NameplateColors" xml:space="preserve">
+        <value>ネームプレートの色設定</value>
+    </data>
+    <data name="NameplateConditions" xml:space="preserve">
+        <value>ネームプレートの条件</value>
+    </data>
+    <data name="NameplateTitle" xml:space="preserve">
+        <value>ネームプレートの肩書き</value>
+    </data>
+    <data name="NameplateUseColor" xml:space="preserve">
+        <value>ネームプレートの色を使用</value>
+    </data>
+    <data name="NameplateUseColorIfDead" xml:space="preserve">
+        <value>戦闘不能時もネームプレートの色を使用</value>
+    </data>
+    <data name="NewCategoryHint" xml:space="preserve">
+        <value>新しいカテゴリを入力</value>
+    </data>
+    <data name="NewTagHint" xml:space="preserve">
+        <value>新しいタグを入力</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>いいえ</value>
+    </data>
+    <data name="NoBackupsMessage" xml:space="preserve">
+        <value>バックアップが見つかりません。</value>
+    </data>
+    <data name="NoCategoryPlacement" xml:space="preserve">
+        <value>カテゴリ未設定のプレイヤーの配置</value>
+    </data>
+    <data name="NoChange" xml:space="preserve">
+        <value>変更なし</value>
+    </data>
+    <data name="NoEncountersMessage" xml:space="preserve">
+        <value>遭遇記録がありません。</value>
+    </data>
+    <data name="NoHistoryMessage" xml:space="preserve">
+        <value>履歴がありません。</value>
+    </data>
+    <data name="NoIconsEnabledMessage" xml:space="preserve">
+        <value>有効なアイコンがありません。</value>
+    </data>
+    <data name="NoLocalPlayers" xml:space="preserve">
+        <value>キャラクターが見つかりません。</value>
+    </data>
+    <data name="NoPlayersFound" xml:space="preserve">
+        <value>プレイヤーが見つかりません。</value>
+    </data>
+    <data name="NoRecordsToDelete" xml:space="preserve">
+        <value>削除対象のレコードはありません。</value>
+    </data>
+    <data name="NoSpecialPerks" xml:space="preserve">
+        <value>寄付による特典はありませんが、心から感謝いたします。</value>
+    </data>
+    <data name="NoWorldError" xml:space="preserve">
+        <value>ワールドを入力してください。</value>
+    </data>
+    <data name="None" xml:space="preserve">
+        <value>なし</value>
+    </data>
+    <data name="NotApplicable" xml:space="preserve">
+        <value>該当なし</value>
+    </data>
+    <data name="NotAvailable" xml:space="preserve">
+        <value>利用不可</value>
+    </data>
+    <data name="Notes" xml:space="preserve">
+        <value>メモ</value>
+    </data>
+    <data name="Now" xml:space="preserve">
+        <value>今すぐ</value>
+    </data>
+    <data name="NumberOfRecordsToBeDeleted" xml:space="preserve">
+        <value>削除対象：{0}/{1}（{2}%%）</value>
+    </data>
+    <data name="OK" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="OnlyShowEnabledIcons" xml:space="preserve">
+        <value>有効なアイコンのみ表示</value>
+    </data>
+    <data name="OnlyShowLoggedIn" xml:space="preserve">
+        <value>ログイン中のみ表示</value>
+    </data>
+    <data name="OpenForDevHelp" xml:space="preserve">
+        <value>開発のお手伝いはいつでも歓迎しています。</value>
+    </data>
+    <data name="OpenLodestone" xml:space="preserve">
+        <value>Lodestone を開く</value>
+    </data>
+    <data name="OpenPlayer" xml:space="preserve">
+        <value>プレイヤーを開く</value>
+    </data>
+    <data name="OpenPlayerPlate" xml:space="preserve">
+        <value>プレイヤープレートを開く</value>
+    </data>
+    <data name="OpenPlayerTrack" xml:space="preserve">
+        <value>PlayerTrack を開く</value>
+    </data>
+    <data name="OpenSettings" xml:space="preserve">
+        <value>設定を開く</value>
+    </data>
+    <data name="Override" xml:space="preserve">
+        <value>上書き</value>
+    </data>
+    <data name="Overworld" xml:space="preserve">
+        <value>フィールド</value>
+    </data>
+    <data name="PitchInIntro" xml:space="preserve">
+        <value>支援したい方へ：以下の方法でご協力いただけます。</value>
+    </data>
+    <data name="Player" xml:space="preserve">
+        <value>プレイヤー</value>
+    </data>
+    <data name="PlayerAddedSuccessfully" xml:space="preserve">
+        <value>プレイヤーを追加しました。</value>
+    </data>
+    <data name="PlayerDefaults" xml:space="preserve">
+        <value>プレイヤーの既定値</value>
+    </data>
+    <data name="PlayerInfo" xml:space="preserve">
+        <value>プレイヤー情報</value>
+    </data>
+    <data name="PlayerList" xml:space="preserve">
+        <value>プレイヤー一覧</value>
+    </data>
+    <data name="PlayerName" xml:space="preserve">
+        <value>プレイヤー名</value>
+    </data>
+    <data name="PlayerStats" xml:space="preserve">
+        <value>プレイヤーステータス</value>
+    </data>
+    <data name="PlayerSummary" xml:space="preserve">
+        <value>プレイヤー概要</value>
+    </data>
+    <data name="PlayerWorld" xml:space="preserve">
+        <value>所属ワールド</value>
+    </data>
+    <data name="Players" xml:space="preserve">
+        <value>プレイヤー</value>
+    </data>
+    <data name="PlayersByCategory" xml:space="preserve">
+        <value>カテゴリ別プレイヤー</value>
+    </data>
+    <data name="PlayersByTag" xml:space="preserve">
+        <value>タグ別プレイヤー</value>
+    </data>
+    <data name="PreserveConfigState" xml:space="preserve">
+        <value>次回起動時に設定ウィンドウの状態を保持</value>
+    </data>
+    <data name="PreserveMainWindowState" xml:space="preserve">
+        <value>次回起動時にメインウィンドウの状態を保持</value>
+    </data>
+    <data name="PreviouslyKnownAs" xml:space="preserve">
+        <value>以前の名前：{0}</value>
+    </data>
+    <data name="PreviouslyOn" xml:space="preserve">
+        <value>以前の所属：{0}</value>
+    </data>
+    <data name="ProximityAlert" xml:space="preserve">
+        <value>接近アラート</value>
+    </data>
+    <data name="ProximityAlertMessage" xml:space="preserve">
+        <value>が近くにいます。</value>
+    </data>
+    <data name="Purge" xml:space="preserve">
+        <value>一括削除</value>
+    </data>
+    <data name="RecentPlayers" xml:space="preserve">
+        <value>最近のプレイヤー</value>
+    </data>
+    <data name="RecentPlayersThreshold" xml:space="preserve">
+        <value>最近とみなす時間（分）</value>
+    </data>
+    <data name="ReplaceGameTitleWithCategoryName" xml:space="preserve">
+        <value>ゲームタイトルをカテゴリ名に置き換える</value>
+    </data>
+    <data name="ReplaceGameTitleWithCustomTitle" xml:space="preserve">
+        <value>ゲームタイトルをカスタムタイトルに置き換える</value>
+    </data>
+    <data name="ReportFindings" xml:space="preserve">
+        <value>不具合や提案はフィードバック、Discord、GitHubからお知らせください。</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>リセット</value>
+    </data>
+    <data name="ResetCategoryTooltip" xml:space="preserve">
+        <value>カテゴリ名を {0} にリセット</value>
+    </data>
+    <data name="ResetLodestone" xml:space="preserve">
+        <value>Lodestone をリセット</value>
+    </data>
+    <data name="ResetPlayers" xml:space="preserve">
+        <value>プレイヤーをリセット</value>
+    </data>
+    <data name="ReviewGitHub" xml:space="preserve">
+        <value>GitHub の issue から対応したい不具合や機能を確認してください。</value>
+    </data>
+    <data name="RunAction" xml:space="preserve">
+        <value>アクションを実行</value>
+    </data>
+    <data name="RunBackup" xml:space="preserve">
+        <value>バックアップを実行</value>
+    </data>
+    <data name="RunBackupBeforeDataActions" xml:space="preserve">
+        <value>操作前にバックアップを取る</value>
+    </data>
+    <data name="RunBackupCleanup" xml:space="preserve">
+        <value>バックアップを整理</value>
+    </data>
+    <data name="SQLExecutor" xml:space="preserve">
+        <value>SQL 実行ツール</value>
+    </data>
+    <data name="SQLExecutorRestriction" xml:space="preserve">
+        <value>PRAGMA と SELECT 文のみ使用できます。</value>
+    </data>
+    <data name="Search" xml:space="preserve">
+        <value>検索</value>
+    </data>
+    <data name="SearchIconsHint" xml:space="preserve">
+        <value>アイコンを検索</value>
+    </data>
+    <data name="SearchOptionsExplanation" xml:space="preserve">
+        <value>次のオプションで検索条件を絞り込めます：</value>
+    </data>
+    <data name="SearchOptionsExplanationDC" xml:space="preserve">
+        <value>dc: データセンターで検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationDefault" xml:space="preserve">
+        <value>(default): 指定がない場合は名前で検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationFC" xml:space="preserve">
+        <value>fc: 指定したフリーカンパニーのメンバーを検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationGender" xml:space="preserve">
+        <value>gender: キャラクターの性別で検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationNotes" xml:space="preserve">
+        <value>notes: 特定のメモを含むプレイヤーを検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationRace" xml:space="preserve">
+        <value>race: キャラクターの種族で検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationTags" xml:space="preserve">
+        <value>tags: 指定したタグが付いたプレイヤーを検索します。</value>
+    </data>
+    <data name="SearchOptionsExplanationWorld" xml:space="preserve">
+        <value>world: ホームワールドで検索します。</value>
+    </data>
+    <data name="SearchOptionsTitle" xml:space="preserve">
+        <value>検索オプション</value>
+    </data>
+    <data name="SearchPlayersHint" xml:space="preserve">
+        <value>プレイヤーを検索</value>
+    </data>
+    <data name="SearchPlayersInputHint" xml:space="preserve">
+        <value>入力を開始してください…</value>
+    </data>
+    <data name="SearchType" xml:space="preserve">
+        <value>検索タイプ</value>
+    </data>
+    <data name="SeenCount" xml:space="preserve">
+        <value>遭遇回数</value>
+    </data>
+    <data name="SelectCategory" xml:space="preserve">
+        <value>カテゴリを選択</value>
+    </data>
+    <data name="SelectPlayerToDelete" xml:space="preserve">
+        <value>削除するプレイヤーを選択</value>
+    </data>
+    <data name="SelectPlayerToUpdate" xml:space="preserve">
+        <value>更新するプレイヤーを選択</value>
+    </data>
+    <data name="Settings" xml:space="preserve">
+        <value>設定</value>
+    </data>
+    <data name="ShowCategories" xml:space="preserve">
+        <value>カテゴリを表示</value>
+    </data>
+    <data name="ShowCategorySeparator" xml:space="preserve">
+        <value>カテゴリ区切りを表示</value>
+    </data>
+    <data name="ShowHidePlayerTrack" xml:space="preserve">
+        <value>PlayerTrack を表示/非表示</value>
+    </data>
+    <data name="ShowHidePlayerTrackConfig" xml:space="preserve">
+        <value>PlayerTrack 設定を表示/非表示</value>
+    </data>
+    <data name="ShowInContent" xml:space="preserve">
+        <value>コンテンツで表示</value>
+    </data>
+    <data name="ShowInHighEndContent" xml:space="preserve">
+        <value>高難易度コンテンツで表示</value>
+    </data>
+    <data name="ShowInOverworld" xml:space="preserve">
+        <value>フィールドで表示</value>
+    </data>
+    <data name="ShowOpenLodestone" xml:space="preserve">
+        <value>Lodestone を開くボタンを表示</value>
+    </data>
+    <data name="ShowOpenPlayerTracker" xml:space="preserve">
+        <value>PlayerTrack を開くボタンを表示</value>
+    </data>
+    <data name="ShowPlayerCountInFilter" xml:space="preserve">
+        <value>フィルターに人数を表示</value>
+    </data>
+    <data name="ShowPlayerFilter" xml:space="preserve">
+        <value>プレイヤーフィルターを表示</value>
+    </data>
+    <data name="ShowSearchBox" xml:space="preserve">
+        <value>検索ボックスを表示</value>
+    </data>
+    <data name="ShowTags" xml:space="preserve">
+        <value>タグを表示</value>
+    </data>
+    <data name="SignUpTest" xml:space="preserve">
+        <value>テスト版に登録して公開前の不具合検出にご協力ください。</value>
+    </data>
+    <data name="Size" xml:space="preserve">
+        <value>サイズ</value>
+    </data>
+    <data name="SocialListAddPlayersHelpText" xml:space="preserve">
+        <value>ソーシャルリストで見つけたプレイヤーを PlayerTrack に追加します。無効にすると、既に登録済みのプレイヤーだけが更新されます。</value>
+    </data>
+    <data name="SocialListDefaultCategoryHelpText" xml:space="preserve">
+        <value>ソーシャルリストに新規追加されたプレイヤーへ任意のカテゴリを付与します。リストから離脱しても自動では削除されません。</value>
+    </data>
+    <data name="SocialListSyncCategoryHelpText" xml:space="preserve">
+        <value>リストを特定のカテゴリと自動同期します。これらは手動で追加・削除できない特別なカテゴリです。</value>
+    </data>
+    <data name="SocialListWarning" xml:space="preserve">
+        <value>ソーシャルリストは特定のタイミングで更新されます。各リストは対応する画面を開くと再読み込みされ、フレンドとブラックリストはログイン時にも更新されます。大規模なフリーカンパニーの場合は、右下の3ページすべてを開いて最後まで読み込ませてください。</value>
+    </data>
+    <data name="SocialLists" xml:space="preserve">
+        <value>ソーシャルリスト</value>
+    </data>
+    <data name="StableExperience" xml:space="preserve">
+        <value>これにより全員が安定した体験を得られます。</value>
+    </data>
+    <data name="StartsWith" xml:space="preserve">
+        <value>前方一致</value>
+    </data>
+    <data name="Status" xml:space="preserve">
+        <value>ステータス</value>
+    </data>
+    <data name="SupportFurtherTitle" xml:space="preserve">
+        <value>さらに支援したい方へ</value>
+    </data>
+    <data name="SyncWithCategory" xml:space="preserve">
+        <value>動的カテゴリと同期</value>
+    </data>
+    <data name="SyncWithVisibility" xml:space="preserve">
+        <value>表示状態と同期</value>
+    </data>
+    <data name="Tags" xml:space="preserve">
+        <value>タグ</value>
+    </data>
+    <data name="TargetPlayer" xml:space="preserve">
+        <value>ターゲットに指定</value>
+    </data>
+    <data name="Terabyte" xml:space="preserve">
+        <value>TB</value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>時刻</value>
+    </data>
+    <data name="Top" xml:space="preserve">
+        <value>上</value>
+    </data>
+    <data name="Type" xml:space="preserve">
+        <value>タイプ</value>
+    </data>
+    <data name="UnassignCategoryTooltip" xml:space="preserve">
+        <value>クリックでこのプレイヤーからカテゴリを外します</value>
+    </data>
+    <data name="UnassignDynamicCategoryTooltip" xml:space="preserve">
+        <value>これは動的カテゴリのため手動では解除できません。</value>
+    </data>
+    <data name="Unavailable" xml:space="preserve">
+        <value>利用不可</value>
+    </data>
+    <data name="Unknown" xml:space="preserve">
+        <value>不明</value>
+    </data>
+    <data name="Unverified" xml:space="preserve">
+        <value>未確認</value>
+    </data>
+    <data name="Upgrade" xml:space="preserve">
+        <value>アップグレード</value>
+    </data>
+    <data name="Verified" xml:space="preserve">
+        <value>確認済み</value>
+    </data>
+    <data name="Visibility" xml:space="preserve">
+        <value>表示状態</value>
+    </data>
+    <data name="VisibilityType" xml:space="preserve">
+        <value>表示タイプ</value>
+    </data>
+    <data name="Voidlist" xml:space="preserve">
+        <value>ボイドリスト</value>
+    </data>
+    <data name="WarningZone" xml:space="preserve">
+        <value>警告：危険な操作です。一度実行すると元に戻せません。</value>
+    </data>
+    <data name="Whitelist" xml:space="preserve">
+        <value>ホワイトリスト</value>
+    </data>
+    <data name="Window" xml:space="preserve">
+        <value>ウィンドウ</value>
+    </data>
+    <data name="WorldTransferAlert" xml:space="preserve">
+        <value>ワールド移転アラート</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>はい</value>
+    </data>
+    <data name="AboutAuthor" xml:space="preserve">
+        <value>作者：</value>
+    </data>
+    <data name="AboutVersion" xml:space="preserve">
+        <value>バージョン：</value>
+    </data>
+    <data name="AboutDiscord" xml:space="preserve">
+        <value>Discord：</value>
+    </data>
+    <data name="AboutDiscordThread" xml:space="preserve">
+        <value>Discord スレッド</value>
+    </data>
+    <data name="AboutIssues" xml:space="preserve">
+        <value>課題</value>
+    </data>
+    <data name="AboutKoFi" xml:space="preserve">
+        <value>Ko-Fi への投げ銭</value>
+    </data>
+    <data name="About" xml:space="preserve">
+        <value>概要</value>
+    </data>
+    <data name="OptionCtrlNewline" xml:space="preserve">
+        <value>改行は CTRL + Enter</value>
+    </data>
+
 </root>
