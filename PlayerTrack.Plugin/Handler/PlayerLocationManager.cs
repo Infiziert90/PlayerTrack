@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using PlayerTrack.Data;
 
 namespace PlayerTrack.Handler;
@@ -24,7 +24,7 @@ public class PlayerLocationManager
         Plugin.ClientStateHandler.TerritoryChanged += ProcessTerritoryChange;
         Plugin.ClientStateHandler.Logout += OnLogout;
         if (Plugin.ClientStateHandler.IsLoggedIn)
-            ProcessTerritoryChange(Plugin.ClientStateHandler.TerritoryType);
+            ProcessTerritoryChange((ushort)Plugin.ClientStateHandler.TerritoryType);
     }
 
     /// <summary>
@@ -45,15 +45,17 @@ public class PlayerLocationManager
         OnLocationEnded = null;
     }
 
-    private void ProcessTerritoryChange(ushort newTerritoryType)
+
+
+    private void ProcessTerritoryChange(uint newTerritoryType)
     {
         if (CurrentTerritoryType != 0)
             OnLocationEnded?.Invoke(Sheets.Locations[CurrentTerritoryType]);
 
         if (newTerritoryType != 0)
-            OnLocationStarted?.Invoke(Sheets.Locations[newTerritoryType]);
+            OnLocationStarted?.Invoke(Sheets.Locations[(ushort)newTerritoryType]);
 
-        CurrentTerritoryType = newTerritoryType;
+        CurrentTerritoryType = (ushort)newTerritoryType;
     }
 
     private void OnLogout(int type, int code)

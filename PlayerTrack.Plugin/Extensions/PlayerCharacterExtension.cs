@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using PlayerTrack.Data;
 
@@ -24,7 +24,7 @@ public static class PlayerCharacterExtension
             HomeWorld = character.HomeWorld.RowId,
             ClassJob = character.ClassJob.RowId,
             Level = character.Level,
-            Customize = character.Customize,
+            Customize = character.Customize.ToArray(),
             CompanyTag = character.CompanyTag.TextValue,
             IsLocalPlayer = false,
             IsDead = character.IsDead,

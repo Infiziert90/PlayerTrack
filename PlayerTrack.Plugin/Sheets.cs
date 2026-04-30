@@ -67,7 +67,7 @@ public static class Sheets
         if (world == null)
             return false;
 
-        var region = WorldDcGroupTypeSheet.GetRowOrDefault(world.Value.DataCenter.RowId)?.Region ?? 0;
+        var region = WorldDcGroupTypeSheet.GetRowOrDefault(world.Value.DataCenter.RowId)?.Region.RowId ?? 0;
         return region == 7;
     }
 
@@ -110,13 +110,13 @@ public static class Sheets
     private static Dictionary<uint, WorldData> LoadWorlds()
     {
         var luminaWorlds = WorldSheet.Where(x => x.DataCenter.ValueNullable != null &&
-                                         (x.DataCenter.ValueNullable?.Region ?? 0) != 0 &&
+                                         (x.DataCenter.ValueNullable?.Region.RowId ?? 0) != 0 &&
                                          !string.IsNullOrWhiteSpace(x.DataCenter.ValueNullable?.Name.ExtractText()) &&
                                          !string.IsNullOrWhiteSpace(x.Name.ExtractText()) &&
                                          !string.IsNullOrWhiteSpace(x.InternalName.ExtractText()) &&
                                          !x.Name.ExtractText().Contains('-') &&
                                          !x.Name.ExtractText().Contains('_'))
-                             .Where(x => x.DataCenter.Value.Region != 5 ||
+                             .Where(x => x.DataCenter.Value.Region.RowId != 5 ||
                                          (x.RowId > 1000 && x.RowId != 1200 &&
                                           IsCJKString(x.Name.ExtractText())));
 
@@ -213,7 +213,7 @@ public static class Sheets
 
     private static Dictionary<uint, DCData> LoadDataCenters()
     {
-        var luminaDataCenters = WorldDcGroupTypeSheet.Where(dataCenter => !dataCenter.Name.IsEmpty && dataCenter.Region != 0 && dataCenter.Region != 7);
+        var luminaDataCenters = WorldDcGroupTypeSheet.Where(dataCenter => !dataCenter.Name.IsEmpty && dataCenter.Region.RowId != 0 && dataCenter.Region.RowId != 7);
 
         return luminaDataCenters.ToDictionary(
             luminaDataCenter => luminaDataCenter.RowId,

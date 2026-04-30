@@ -1,12 +1,13 @@
-﻿using System;
-using System.Data;
 using AutoMapper;
-using FluentDapperLite.Extension;
-using System.Text.Json;
 using Dalamud.Utility;
 using Dapper;
+using FluentDapperLite.Extension;
 using FluentDapperLite.Maintenance;
+using Microsoft.Extensions.Logging.Abstractions;
 using PlayerTrack.Resource;
+using System;
+using System.Data;
+using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PlayerTrack.Infrastructure;

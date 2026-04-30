@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
@@ -27,7 +27,7 @@ public abstract class WindowEx : Window
     private readonly Vector2 ItemSpacing = new(8, 4);
     private readonly Vector2 WindowPadding = new(8, 8);
 
-    private ImRaii.Style Style = null!;
+    private ImRaii.StyleDisposable? Style = null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowEx" /> class.

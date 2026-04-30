@@ -72,4 +72,9 @@
 	    <DependentUpon>Language.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="DalamudPackager" Version="15.0.0" />
+	  <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2" />
+	</ItemGroup>
 </Project>

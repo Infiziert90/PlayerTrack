@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin.Services;
+using Dalamud.Plugin.Services;
 using PlayerTrack.Data;
 
 namespace PlayerTrack.Extensions;
@@ -23,7 +23,7 @@ public static class ClientStateExtension
             Name = Plugin.PlayerState.CharacterName,
             HomeWorld = Plugin.PlayerState.HomeWorld.RowId,
             ContentId = Plugin.PlayerState.ContentId,
-            Customize = Plugin.ObjectTable.LocalPlayer.Customize,
+            Customize = Plugin.ObjectTable.LocalPlayer.Customize.ToArray(),
         };
 
         return localPlayer.IsValid() ? localPlayer : null;

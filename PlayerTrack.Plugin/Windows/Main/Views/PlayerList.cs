@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Bindings.ImGui;
@@ -7,7 +7,7 @@ using PlayerTrack.Models;
 using PlayerTrack.Windows.Main.Components;
 using PlayerTrack.Windows.Main.Presenters;
 using PlayerTrack.Windows.Views;
-
+using Dalamud.Interface.Windowing;
 namespace PlayerTrack.Windows.Main.Views;
 
 public class PlayerList : PlayerTrackView, IViewWithPanel
