@@ -8,6 +8,7 @@ public enum ConfigMenuOption
     Tags,
     PlayerDefaults,
     Categories,
+    Categorizer,
     Locations,
     SocialLists,
     Integrations,

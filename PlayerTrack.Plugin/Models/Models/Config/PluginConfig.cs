@@ -123,6 +123,19 @@ public class PluginConfig : IPluginConfig
 
     public NoCategoryPlacement NoCategoryPlacement { get; set; } = NoCategoryPlacement.Bottom;
 
+    // ----------------------------------------------------------------
+    // Categorizer settings
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// Keyword rules evaluated against adventurer plate bios.
+    /// When a rule matches, its category is assigned to the player immediately.
+    /// </summary>
+    public List<CategoryRule> CategorizerRules { get; set; } = new();
+
+    /// <summary>Emit verbose debug logs from the plate watcher when true.</summary>
+    public bool CategorizerDebugLogging { get; set; } = false;
+
     public TrackingLocationConfig GetTrackingLocationConfig(LocationType locType) => locType switch
     {
         LocationType.Overworld => Overworld,

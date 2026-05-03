@@ -20,6 +20,7 @@ public class ConfigView : PlayerTrackView, IDisposable
     private readonly TagComponent TagComponent = new();
     private readonly PlayerDefaultsComponent PlayerDefaultsComponent = new();
     private readonly CategoryComponent CategoryComponent = new();
+    private readonly CategorizerComponent CategorizerComponent = new();
     private readonly LocationComponent LocationComponent = new();
     private readonly SocialListComponent SocialListComponent = new();
     private readonly IntegrationComponent IntegrationComponent = new();
@@ -140,6 +141,9 @@ public class ConfigView : PlayerTrackView, IDisposable
                     break;
                 case ConfigMenuOption.Categories:
                     CategoryComponent.Draw();
+                    break;
+                case ConfigMenuOption.Categorizer:
+                    CategorizerComponent.Draw();
                     break;
                 case ConfigMenuOption.Locations:
                     LocationComponent.Draw();

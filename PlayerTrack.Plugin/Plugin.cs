@@ -35,6 +35,7 @@ public class Plugin : IDalamudPlugin
     [PluginService] public static INamePlateGui NamePlateGuiHandler { get; set; } = null!;
     [PluginService] public static IDataManager DataManager { get; set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; set; } = null!;
+    [PluginService] public static IAddonLifecycle AddonLifecycle { get; set; } = null!;
 
     public static WindowManager WindowManager { get; set; } = null!;
 
@@ -75,6 +76,7 @@ public class Plugin : IDalamudPlugin
         try
         {
             PlayerTrackProvider?.Dispose();
+            PlateWatcher.Dispose();
             CommandHandler.Dispose();
             NameplateHandler.Dispose();
             EventDispatcher.Dispose();
@@ -151,6 +153,7 @@ public class Plugin : IDalamudPlugin
         PlayerLocationManager.Start();
         SocialListHandler.Start();
         ServiceContext.PlayerProcessService.Start();
+        PlateWatcher.Start();
         PlayerTrackProvider = new PlayerTrackProvider(PluginInterface, new PlayerTrackAPI());
     });
 }
