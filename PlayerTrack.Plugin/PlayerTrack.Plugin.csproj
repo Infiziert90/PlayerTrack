@@ -7,6 +7,9 @@
 		<RootNamespace>PlayerTrack</RootNamespace>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<!-- Dalamud.NET.Sdk sets LangVersion=14.0, which the preview .NET compiler
+		     does not accept as a version token. Override to "preview" instead. -->
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
