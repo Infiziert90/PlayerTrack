@@ -88,6 +88,23 @@ public class PlayerTrackAPI : IPlayerTrackAPI
         return [.. toReturn];
     }
 
+    /// <inheritdoc />
+    public bool AssignCategory(string name, uint worldId, uint categoryId)
+    {
+        Plugin.PluginLog.Verbose($"Entering PlayerTrackAPI.AssignCategory({name}, {worldId}, {categoryId})");
+        CheckInitialized();
+
+        var player = ServiceContext.PlayerDataService.GetPlayer(name, worldId);
+        if (player == null)
+        {
+            Plugin.PluginLog.Warning($"AssignCategory: Player not found, name: {name}, worldId: {worldId}");
+            return false;
+        }
+
+        PlayerCategoryService.AssignCategoryToPlayerSync(player.Id, (int)categoryId);
+        return true;
+    }
+
     private void CheckInitialized()
     {
         Plugin.PluginLog.Verbose("Entering PlayerTrackAPI.CheckInitialized()");

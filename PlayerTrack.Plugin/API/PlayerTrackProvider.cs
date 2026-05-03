@@ -32,6 +32,11 @@ public class PlayerTrackProvider
     public const string LabelProviderGetAllPlayerNameWorldHistories = "PlayerTrack.GetAllPlayerNameWorldHistories";
 
     /// <summary>
+    /// AssignCategory.
+    /// </summary>
+    public const string LabelProviderAssignCategory = "PlayerTrack.AssignCategory";
+
+    /// <summary>
     /// API.
     /// </summary>
     public readonly IPlayerTrackAPI API;
@@ -55,6 +60,11 @@ public class PlayerTrackProvider
     /// ProviderGetAllPlayerNameWorldHistories.
     /// </summary>
     public readonly ICallGateProvider<((string, uint), (string, uint)[])[]>? ProviderGetAllPlayerNameWorldHistories;
+
+    /// <summary>
+    /// ProviderAssignCategory.
+    /// </summary>
+    public readonly ICallGateProvider<string, uint, uint, bool>? ProviderAssignCategory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerTrackProvider"/> class.
@@ -105,6 +115,16 @@ public class PlayerTrackProvider
         {
             Plugin.PluginLog.Error($"Error registering IPC provider for {LabelProviderGetAllPlayerNameWorldHistories}:\n{e}");
         }
+
+        try
+        {
+            ProviderAssignCategory = pluginInterface.GetIpcProvider<string, uint, uint, bool>(LabelProviderAssignCategory);
+            ProviderAssignCategory.RegisterFunc(api.AssignCategory);
+        }
+        catch (Exception e)
+        {
+            Plugin.PluginLog.Error($"Error registering IPC provider for {LabelProviderAssignCategory}:\n{e}");
+        }
     }
 
     /// <summary>
@@ -117,5 +137,6 @@ public class PlayerTrackProvider
         ProviderGetPlayerCurrentNameWorld?.UnregisterFunc();
         ProviderGetPlayerNotes?.UnregisterFunc();
         ProviderGetAllPlayerNameWorldHistories?.UnregisterFunc();
+        ProviderAssignCategory?.UnregisterFunc();
     }
 }
