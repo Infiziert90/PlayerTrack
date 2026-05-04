@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.Chat;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using PlayerTrack.Domain;
 
@@ -56,7 +59,8 @@ public static class PlateWatcher
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, AddonName, OnCharaCardOpen);
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate,  AddonName, OnCharaCardUpdate);
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, AddonName, OnCharaCardClose);
-        Plugin.PluginLog.Information("[PlateWatcher] Registered for addon 'CharaCard'.");
+        Plugin.ChatGuiHandler.ChatMessage += OnDailyRoutinesChatMessage;
+        Plugin.PluginLog.Information("[PlateWatcher] Registered for addon 'CharaCard' and IChatGui.ChatMessage.");
     }
 
     public static void Dispose()
@@ -66,6 +70,136 @@ public static class PlateWatcher
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, AddonName, OnCharaCardOpen);
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PostUpdate,  AddonName, OnCharaCardUpdate);
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, AddonName, OnCharaCardClose);
+        Plugin.ChatGuiHandler.ChatMessage -= OnDailyRoutinesChatMessage;
+    }
+
+    // ----------------------------------------------------------------
+    // DailyRoutines chat integration
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// Listens for DailyRoutines' "Search Info from &lt;Player&gt;" chat output and
+    /// runs categorizer rules against the bio text it contains.
+    ///
+    /// Expected SeString payload layout emitted by DailyRoutines:
+    ///   TextPayload  -- contains "Search Info from" somewhere in its text
+    ///   PlayerPayload -- the linked player (carries PlayerName and World)
+    ///   TextPayload(s) -- the plate bio content
+    ///
+    /// With debug logging enabled every payload is written to /xllog so the
+    /// exact layout can be verified against real DailyRoutines output.
+    /// </summary>
+    private static void OnDailyRoutinesChatMessage(IHandleableChatMessage chatMessage)
+    {
+        try
+        {
+            var config = ServiceContext.ConfigService.GetConfig();
+
+            // Diagnostic: dump every payload so the real layout can be confirmed.
+            if (config.CategorizerDebugLogging)
+            {
+                Plugin.PluginLog.Debug($"[PlateWatcher/Chat] type={chatMessage.LogKind} payload count={chatMessage.Message.Payloads.Count}");
+                for (var pi = 0; pi < chatMessage.Message.Payloads.Count; pi++)
+                    Plugin.PluginLog.Debug(
+                        $"  [{pi}] {chatMessage.Message.Payloads[pi].GetType().Name}: {chatMessage.Message.Payloads[pi]}");
+            }
+
+            // Phase 1: locate the "Search Info from" text payload.
+            bool   foundPrefix  = false;
+            bool   afterPlayer  = false;
+            string playerName   = string.Empty;
+            uint   worldId      = 0;
+            var    bioParts     = new StringBuilder();
+
+            foreach (var payload in chatMessage.Message.Payloads)
+            {
+                if (!foundPrefix)
+                {
+                    if (payload is TextPayload tp &&
+                        tp.Text != null &&
+                        tp.Text.Contains("Search Info from", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundPrefix = true;
+                    }
+                    continue;
+                }
+
+                // Phase 2: capture the PlayerPayload that follows the prefix.
+                if (!afterPlayer)
+                {
+                    if (payload is PlayerPayload pp)
+                    {
+                        playerName  = pp.PlayerName;
+                        worldId     = pp.World.RowId;
+                        afterPlayer = true;
+                    }
+                    continue;
+                }
+
+                // Phase 3: accumulate all text payloads after the player link as bio.
+                if (payload is TextPayload bioTp && bioTp.Text != null)
+                    bioParts.Append(bioTp.Text);
+            }
+
+            if (!foundPrefix || !afterPlayer) return;
+
+            string bio = bioParts.ToString().Trim();
+
+            Plugin.PluginLog.Debug(
+                $"[PlateWatcher/Chat] Detected: player=\"{playerName}\" " +
+                $"worldId={worldId} bio=\"{bio}\"");
+
+            if (string.IsNullOrWhiteSpace(bio))
+            {
+                Plugin.PluginLog.Debug(
+                    $"[PlateWatcher/Chat] Bio is empty for {playerName}; no rules evaluated.");
+                return;
+            }
+
+            if (config.CategorizerRules.Count == 0)
+            {
+                Plugin.PluginLog.Debug("[PlateWatcher/Chat] No categorizer rules configured.");
+                return;
+            }
+
+            bool anyEnabled = false;
+            foreach (var rule in config.CategorizerRules)
+            {
+                if (!rule.Enabled || string.IsNullOrEmpty(rule.Keyword)) continue;
+                anyEnabled = true;
+
+                if (!Matches(bio, rule)) continue;
+
+                Plugin.PluginLog.Information(
+                    $"[PlateWatcher/Chat] Rule matched: keyword=\"{rule.Keyword}\" " +
+                    $"categoryId={rule.CategoryId} player=\"{playerName}\"@worldId={worldId}");
+
+                var player = ServiceContext.PlayerDataService.GetPlayer(playerName, worldId);
+                if (player == null)
+                {
+                    Plugin.PluginLog.Warning(
+                        $"[PlateWatcher/Chat] Player \"{playerName}\"@worldId={worldId} " +
+                        "not found in PlayerTrack cache; skipping.");
+                    return;
+                }
+
+                PlayerCategoryService.AssignCategoryToPlayerSync(player.Id, (int)rule.CategoryId);
+                return;
+            }
+
+            if (config.CategorizerDebugLogging)
+            {
+                if (!anyEnabled)
+                    Plugin.PluginLog.Debug("[PlateWatcher/Chat] All categorizer rules are disabled.");
+                else
+                    Plugin.PluginLog.Debug(
+                        $"[PlateWatcher/Chat] No rules matched bio for \"{playerName}\".");
+            }
+        }
+        catch (Exception ex)
+        {
+            Plugin.PluginLog.Error(ex, "[PlateWatcher/Chat] Unhandled exception in OnDailyRoutinesChatMessage.");
+        }
     }
 
     // ----------------------------------------------------------------
@@ -75,8 +209,7 @@ public static class PlateWatcher
     private static void OnCharaCardOpen(AddonEvent eventType, AddonArgs args)
     {
         _pendingProcessing = true;
-        if (ServiceContext.ConfigService.GetConfig().CategorizerDebugLogging)
-            Plugin.PluginLog.Debug($"[PlateWatcher] {eventType} -- plate armed for processing.");
+        Plugin.PluginLog.Debug($"[PlateWatcher] {eventType} -- plate armed for processing.");
     }
 
     private static void OnCharaCardClose(AddonEvent eventType, AddonArgs args)

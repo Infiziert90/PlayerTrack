@@ -137,23 +137,30 @@ public class Plugin : IDalamudPlugin
 
     private void RunPostStartup() => Task.Run(() =>
     {
-        PluginLog.Verbose("Entering Plugin.RunPostStartup()");
-        EncounterService.EnsureNoOpenEncounters();
-        ServiceContext.LodestoneService.Start();
-        ServiceContext.ConfigService.SyncIcons();
-        ServiceContext.PlayerCacheService.LoadPlayers();
-        ServiceContext.VisibilityService.Initialize();
-        SetPluginVersion();
-        ServiceContext.BackupService.Startup();
-        GuiController.Start();
-        ContextMenuHandler.Start();
-        EventDispatcher.Start();
-        NameplateHandler.Start();
-        CommandHandler.Start();
-        PlayerLocationManager.Start();
-        SocialListHandler.Start();
-        ServiceContext.PlayerProcessService.Start();
-        PlateWatcher.Start();
-        PlayerTrackProvider = new PlayerTrackProvider(PluginInterface, new PlayerTrackAPI());
+        try
+        {
+            PluginLog.Verbose("Entering Plugin.RunPostStartup()");
+            EncounterService.EnsureNoOpenEncounters();
+            ServiceContext.LodestoneService.Start();
+            ServiceContext.ConfigService.SyncIcons();
+            ServiceContext.PlayerCacheService.LoadPlayers();
+            ServiceContext.VisibilityService.Initialize();
+            SetPluginVersion();
+            ServiceContext.BackupService.Startup();
+            GuiController.Start();
+            ContextMenuHandler.Start();
+            EventDispatcher.Start();
+            NameplateHandler.Start();
+            CommandHandler.Start();
+            PlayerLocationManager.Start();
+            SocialListHandler.Start();
+            ServiceContext.PlayerProcessService.Start();
+            PlateWatcher.Start();
+            PlayerTrackProvider = new PlayerTrackProvider(PluginInterface, new PlayerTrackAPI());
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "[Plugin] RunPostStartup threw an unhandled exception; plugin may be partially initialized.");
+        }
     });
 }

@@ -26,7 +26,13 @@ public static class MenuItemClickedArgsExtension
         var worldId = menuTargetDefault.TargetHomeWorld.RowId;
         var contentId = menuTargetDefault.TargetContentId;
         var objectId = menuTargetDefault.TargetObjectId;
-        if (playerName.IsValidCharacterName() && Sheets.IsValidWorld(worldId) && contentId != 0 && objectId != 0)
+
+        // Name and world are the minimum required to identify a player.
+        // contentId / objectId are 0 / 0xE0000000 for players who are not
+        // currently in the local zone (e.g. right-click on a chat name).
+        // The OpenPlayerTrack handler already handles the isCurrent=false
+        // path when contentId is absent, so we do not require them here.
+        if (playerName.IsValidCharacterName() && Sheets.IsValidWorld(worldId))
         {
             return new PlayerData
             {
