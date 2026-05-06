@@ -90,22 +90,6 @@ public class PlayerSummaryComponent : ViewComponent
         DrawNotes(player);
     }
 
-    private void DrawNotes(PlayerView player)
-    {
-        Helper.TextColored(ImGuiColors.DalamudViolet, Language.Notes);
-        var flags = ImGuiInputTextFlags.AllowTabInput;
-        if (Config.UseCtrlNewLine)
-            flags |= ImGuiInputTextFlags.CtrlEnterForNewLine;
-
-        var notes = player.Notes;
-        var inputSize = new Vector2(ImGui.GetWindowSize().X - (5f * ImGuiHelpers.GlobalScale), -1 - (5f * ImGuiHelpers.GlobalScale));
-        if (ImGui.InputTextMultiline("###Player_Summary_Notes_Text", ref notes, 2000, inputSize, flags))
-        {
-            player.Notes = notes;
-            ServiceContext.PlayerDataService.UpdatePlayerNotes(player.Id, notes);
-        }
-    }
-
     private void DrawCategoryTagAssignments(PlayerView player)
     {
         DrawAssignedCategories(player);
@@ -282,9 +266,73 @@ public class PlayerSummaryComponent : ViewComponent
         }
     }
 
+    private void DrawNotes(PlayerView player)
+    {
+        var availWidth = ImGui.GetContentRegionAvail().X;
+        var itemSpacing = ImGui.GetStyle().ItemSpacing.X;
+        var leftWidth = (availWidth - itemSpacing) * 0.5f;
+        var areaHeight = -1f - (5f * ImGuiHelpers.GlobalScale);
+
+        // Headings row: "Notes" on the left, "Plate Bio" aligned to the right half.
+        Helper.TextColored(ImGuiColors.DalamudViolet, Language.Notes);
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(leftWidth + itemSpacing);
+        Helper.TextColored(ImGuiColors.DalamudViolet, "Plate Bio");
+
+        // Left child: editable notes.
+        using (ImRaii.Child("###PlayerNotes", new Vector2(leftWidth, areaHeight), false))
+        {
+            var flags = ImGuiInputTextFlags.AllowTabInput;
+            if (Config.UseCtrlNewLine)
+                flags |= ImGuiInputTextFlags.CtrlEnterForNewLine;
+
+            var notes = player.Notes;
+            if (ImGui.InputTextMultiline("###Player_Summary_Notes_Text", ref notes, 2000, new Vector2(-1, -1), flags))
+            {
+                player.Notes = notes;
+                ServiceContext.PlayerDataService.UpdatePlayerNotes(player.Id, notes);
+            }
+        }
+
+        ImGui.SameLine();
+
+        // Right child: bio history, read-only, newest first.
+        using (ImRaii.Child("###PlayerBioHistory", new Vector2(-1, areaHeight), false))
+        {
+            DrawBioHistory(player);
+        }
+    }
+
+    private static void DrawBioHistory(PlayerView player)
+    {
+        if (player.BioHistory.Count == 0)
+        {
+            ImGui.TextUnformatted("No plate bio recorded yet.");
+            return;
+        }
+
+        for (var i = 0; i < player.BioHistory.Count; i++)
+        {
+            var entry = player.BioHistory[i];
+            if (i > 0)
+            {
+                ImGuiHelpers.ScaledDummy(2f);
+                ImGui.Separator();
+                ImGuiHelpers.ScaledDummy(2f);
+            }
+
+            using (ImRaii.PushColor(ImGuiCol.Text, ImGuiColors.DalamudGrey))
+                ImGui.TextUnformatted(entry.When);
+
+            ImGui.TextWrapped(entry.Bio);
+        }
+    }
+
     private void DrawAssignedCategories(PlayerView player)
     {
-        using var child = ImRaii.Child("AssignedCategories", new Vector2(0, AssignedChildHeight), false);
+        // Width is capped at the Tags column boundary so category badges
+        // never overlap the Tags child that follows on the same line.
+        using var child = ImRaii.Child("AssignedCategories", new Vector2(CurrentOffsets[1], AssignedChildHeight), false);
         if (!child.Success)
             return;
 

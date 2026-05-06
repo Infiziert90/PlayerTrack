@@ -48,4 +48,10 @@ public class PlayerView
     public List<PlayerNameWorldHistoryView> PlayerNameWorldHistories { get; set; } = [];
 
     public List<PlayerCustomizeHistoryView> PlayerCustomizeHistories { get; set; } = [];
+
+    /// <summary>
+    /// Plate bio history for this player, newest entry first.
+    /// Populated by <see cref="PlayerTrack.Windows.ViewModels.Mappers.PlayerViewMapper"/>.
+    /// </summary>
+    public List<PlayerBioView> BioHistory { get; set; } = [];
 }

@@ -29,6 +29,7 @@ public static class RepositoryContext
     public static LocalPlayerRepository LocalPlayerRepository { get; set; } = null!;
     public static SocialListRepository SocialListRepository { get; set; } = null!;
     public static SocialListMemberRepository SocialListMemberRepository { get; set; } = null!;
+    public static PlayerBioRepository PlayerBioRepository { get; set; } = null!;
     private static IDbConnection Database { get; set; } = null!;
     private static IMapper Mapper { get; set; } = null!;
 
@@ -52,6 +53,7 @@ public static class RepositoryContext
         LocalPlayerRepository = new LocalPlayerRepository(Database, Mapper);
         SocialListRepository = new SocialListRepository(Database, Mapper);
         SocialListMemberRepository = new SocialListMemberRepository(Database, Mapper);
+        PlayerBioRepository = new PlayerBioRepository(Database, Mapper);
         RunWinePragmas();
         RunMaintenanceChecks();
     }
@@ -156,6 +158,7 @@ public static class RepositoryContext
             cfg.AddProfile<LocalPlayerMappingProfile>();
             cfg.AddProfile<SocialListMappingProfile>();
             cfg.AddProfile<SocialListMemberMappingProfile>();
+            cfg.AddProfile<PlayerBioMappingProfile>();
         });
 
         return mapperConfig.CreateMapper();

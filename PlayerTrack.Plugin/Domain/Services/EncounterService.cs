@@ -15,6 +15,14 @@ public class EncounterService
     public Encounter? CurrentEncounter { get; private set;  }
     public Encounter? CurrentEncounterSnapshot { get; private set;  }
 
+    /// <summary>
+    /// Fired after an encounter ends and all player encounter timestamps have
+    /// been committed to the database.  Subscribers (e.g. EncounterWatcher)
+    /// receive the closed <see cref="Encounter"/> and may safely query
+    /// player encounter durations via the repository.
+    /// </summary>
+    public static event Action<Encounter>? EncounterEnded;
+
     public static void UpdateEncounter(Encounter encounter) =>
         RepositoryContext.EncounterRepository.UpdateEncounter(encounter);
 
@@ -90,7 +98,12 @@ public class EncounterService
         CurrentEncounter.Ended = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         UpdateEncounter(CurrentEncounter);
         PlayerEncounterService.EndPlayerEncounters(CurrentEncounter.Id);
+
+        // Capture and clear before firing so subscribers see a null CurrentEncounter
+        // (consistent with the post-encounter state) but still have the closed record.
+        var ended = CurrentEncounter;
         CurrentEncounter = null;
+        EncounterEnded?.Invoke(ended);
     }
 
     public void DeleteEncounters()

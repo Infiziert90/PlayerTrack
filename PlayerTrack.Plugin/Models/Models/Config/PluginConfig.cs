@@ -133,8 +133,45 @@ public class PluginConfig : IPluginConfig
     /// </summary>
     public List<CategoryRule> CategorizerRules { get; set; } = new();
 
+    /// <summary>
+    /// Zone-time rules evaluated when an encounter ends.
+    /// When a player's single-session encounter duration in the specified zone
+    /// meets or exceeds the rule threshold, its category is assigned.
+    /// </summary>
+    public List<EncounterRule> EncounterRules { get; set; } = new();
+
+    /// <summary>
+    /// Global exclusion threshold in seconds.  An encounter whose total
+    /// duration is shorter than this value will not be evaluated against
+    /// EncounterRules at all, regardless of per-rule thresholds.
+    /// Set to 0 to disable the global guard.
+    /// </summary>
+    public int EncounterRuleMinEncounterSeconds { get; set; } = 60;
+
     /// <summary>Emit verbose debug logs from the plate watcher when true.</summary>
     public bool CategorizerDebugLogging { get; set; } = false;
+
+    // ----------------------------------------------------------------
+    // Auto-scrape settings
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// When true, PlayerTrack automatically opens each player's Adventurer Plate
+    /// in the background as they enter the zone, reads the bio, and closes the window.
+    /// </summary>
+    public bool AutoScrapeEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Minimum seconds to wait between consecutive automatic plate openings.
+    /// Lower values collect bios faster but risk server-side rate limiting.
+    /// </summary>
+    public int AutoScrapeIntervalSeconds { get; set; } = 8;
+
+    /// <summary>
+    /// A player's bio is considered stale and will be re-scraped if its most
+    /// recent entry is older than this many days. Set to 0 to always scrape.
+    /// </summary>
+    public int AutoScrapeStaleAfterDays { get; set; } = 7;
 
     public TrackingLocationConfig GetTrackingLocationConfig(LocationType locType) => locType switch
     {

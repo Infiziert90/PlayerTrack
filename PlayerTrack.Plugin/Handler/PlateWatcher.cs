@@ -49,6 +49,18 @@ public static class PlateWatcher
     private static bool   _diagnosticDumpDone;
 
     // ----------------------------------------------------------------
+    // Events
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// Raised at the end of the main processing path in OnCharaCardUpdate
+    /// (i.e. after a newly-seen plate has been read, regardless of whether a
+    /// bio or rule match was found).  BioScraper subscribes to this event so
+    /// it knows when to hide the CharaCard window it auto-opened.
+    /// </summary>
+    public static event Action? OnPlateProcessed;
+
+    // ----------------------------------------------------------------
     // Lifecycle
     // ----------------------------------------------------------------
 
@@ -156,6 +168,11 @@ public static class PlateWatcher
                 return;
             }
 
+            // Persist bio snapshot regardless of whether a categorizer rule matches.
+            var player = ServiceContext.PlayerDataService.GetPlayer(playerName, worldId);
+            if (player != null)
+                PlayerBioService.UpdateBioIfChanged(player.Id, bio);
+
             if (config.CategorizerRules.Count == 0)
             {
                 Plugin.PluginLog.Debug("[PlateWatcher/Chat] No categorizer rules configured.");
@@ -174,7 +191,6 @@ public static class PlateWatcher
                     $"[PlateWatcher/Chat] Rule matched: keyword=\"{rule.Keyword}\" " +
                     $"categoryId={rule.CategoryId} player=\"{playerName}\"@worldId={worldId}");
 
-                var player = ServiceContext.PlayerDataService.GetPlayer(playerName, worldId);
                 if (player == null)
                 {
                     Plugin.PluginLog.Warning(
@@ -260,6 +276,11 @@ public static class PlateWatcher
             _lastProcessedRawName = playerName;
             _pendingProcessing    = false;
 
+            // Everything from here to the end of the outer try runs inside its own
+            // try/finally so that OnPlateProcessed is guaranteed to fire exactly once
+            // for every newly-processed plate, regardless of which branch exits first.
+            try
+            {
             // World node is "WorldName [DatacenterName]" -- strip the datacenter suffix.
             string rawWorld  = ReadTextNodeInComponent(addon, NodeIdWorldComponent, NodeIdWorldText);
             string worldName = StripDatacenter(rawWorld);
@@ -291,6 +312,11 @@ public static class PlateWatcher
                 return;
             }
 
+            // Persist bio snapshot regardless of whether a categorizer rule matches.
+            var player = ServiceContext.PlayerDataService.GetPlayer(playerName, worldId);
+            if (player != null)
+                PlayerBioService.UpdateBioIfChanged(player.Id, bio);
+
             if (config.CategorizerRules.Count == 0)
             {
                 Plugin.PluginLog.Debug("[PlateWatcher] No categorizer rules configured.");
@@ -309,7 +335,6 @@ public static class PlateWatcher
                     $"[PlateWatcher] Rule matched: keyword=\"{rule.Keyword}\" " +
                     $"categoryId={rule.CategoryId} player=\"{playerName}\"@worldId={worldId}");
 
-                var player = ServiceContext.PlayerDataService.GetPlayer(playerName, worldId);
                 if (player == null)
                 {
                     Plugin.PluginLog.Warning(
@@ -327,6 +352,11 @@ public static class PlateWatcher
             else
                 Plugin.PluginLog.Debug(
                     $"[PlateWatcher] No rules matched bio for \"{playerName}\".");
+            } // end inner try
+            finally
+            {
+                OnPlateProcessed?.Invoke();
+            }
         }
         catch (Exception ex)
         {

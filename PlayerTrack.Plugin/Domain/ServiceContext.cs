@@ -23,6 +23,7 @@ public static class ServiceContext
     public static VisibilityService VisibilityService { get; set; } = null!;
     public static LocalPlayerService LocalPlayerService { get; set; } = null!;
     public static SocialListService SocialListService { get; set; } = null!;
+    public static PlayerBioService PlayerBioService { get; set; } = null!;
 
     public static void Initialize()
     {
@@ -46,6 +47,7 @@ public static class ServiceContext
         VisibilityService = new VisibilityService();
         LocalPlayerService = new LocalPlayerService();
         SocialListService = new SocialListService();
+        PlayerBioService = new PlayerBioService();
     }
 
     public static void Dispose()

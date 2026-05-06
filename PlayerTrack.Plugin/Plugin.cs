@@ -76,7 +76,9 @@ public class Plugin : IDalamudPlugin
         try
         {
             PlayerTrackProvider?.Dispose();
+            BioScraper.Dispose();
             PlateWatcher.Dispose();
+            EncounterWatcher.Dispose();
             CommandHandler.Dispose();
             NameplateHandler.Dispose();
             EventDispatcher.Dispose();
@@ -156,6 +158,8 @@ public class Plugin : IDalamudPlugin
             SocialListHandler.Start();
             ServiceContext.PlayerProcessService.Start();
             PlateWatcher.Start();
+            BioScraper.Start();
+            EncounterWatcher.Start();
             PlayerTrackProvider = new PlayerTrackProvider(PluginInterface, new PlayerTrackAPI());
         }
         catch (Exception ex)

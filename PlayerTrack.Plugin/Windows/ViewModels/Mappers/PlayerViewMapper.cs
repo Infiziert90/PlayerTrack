@@ -41,6 +41,7 @@ public static class PlayerViewMapper
         AddCategories(player.AssignedCategories, playerView);
         AddEncounters(player.Id, playerView);
         AddPlayerHistory(player.Id, playerView);
+        AddBioHistory(player.Id, playerView);
 
         return playerView;
     }
@@ -141,6 +142,20 @@ public static class PlayerViewMapper
                 Job = Sheets.ClassJobs[pEnc.JobId].Code,
                 Level = pEnc.JobLvl.ToString(),
                 Location = GetLastLocation(enc.TerritoryTypeId)
+            });
+        }
+    }
+
+    private static void AddBioHistory(int playerId, PlayerView playerView)
+    {
+        playerView.BioHistory = [];
+        var bios = PlayerBioService.GetBioHistory(playerId);
+        foreach (var bio in bios)
+        {
+            playerView.BioHistory.Add(new PlayerBioView
+            {
+                Bio  = bio.Bio,
+                When = bio.Created.ToTimeSpan(),
             });
         }
     }
