@@ -6,7 +6,6 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Bindings.ImGui;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using PlayerTrack.API;
 using PlayerTrack.Domain;
 using PlayerTrack.Resource;
@@ -313,26 +312,18 @@ public class PlayerSummaryComponent : ViewComponent
         }
 
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Player Search (opens Social window, name copied to clipboard)");
+            ImGui.SetTooltip("Player Search (/search)");
     }
 
-    private static unsafe void OpenPlayerSearch(PlayerView player)
+    private static void OpenPlayerSearch(PlayerView player)
     {
         try
         {
-            // Copy the player name to clipboard so it can be pasted into the search field.
-            ImGui.SetClipboardText(player.Name);
-
-            // Open the Social window via the Friend List agent.  The Social window hosts
-            // all social tabs (Friends, Blacklist, Player Search, etc.).  The user can
-            // switch to the Player Search tab and paste the copied name.
-            var agent = AgentFriendlist.Instance();
-            if (agent != null)
-                agent->AgentInterface.Show();
+            Plugin.CommandManager.ProcessCommand($"/search {player.Name}");
         }
         catch (Exception ex)
         {
-            Plugin.PluginLog.Warning(ex, "[PlayerSearch] Failed to open Social window.");
+            Plugin.PluginLog.Warning(ex, "[PlayerSearch] Failed to execute /search command.");
         }
     }
 

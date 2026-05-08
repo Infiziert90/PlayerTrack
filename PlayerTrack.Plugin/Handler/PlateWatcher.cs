@@ -157,6 +157,12 @@ public static class PlateWatcher
 
             string bio = bioParts.ToString().Trim();
 
+            // SimpleTweaks prepends "PlayerName>" to its chat output.
+            // Strip that prefix so the stored bio matches the raw plate content.
+            var namePrefix = playerName + ">";
+            if (bio.StartsWith(namePrefix, StringComparison.OrdinalIgnoreCase))
+                bio = bio[namePrefix.Length..].Trim();
+
             Plugin.PluginLog.Debug(
                 $"[PlateWatcher/Chat] Detected: player=\"{playerName}\" " +
                 $"worldId={worldId} bio=\"{bio}\"");
