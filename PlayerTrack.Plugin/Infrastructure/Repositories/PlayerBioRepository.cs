@@ -50,7 +50,7 @@ public class PlayerBioRepository : BaseRepository
         try
         {
             var dto = Mapper.Map<PlayerBioDTO>(bio);
-            SetInsertTimestamps(dto);
+            SetCreateTimestamp(dto);
             const string sql = @"
                 INSERT INTO player_bios (player_id, bio, created, updated)
                 VALUES (@player_id, @bio, @created, @updated)
