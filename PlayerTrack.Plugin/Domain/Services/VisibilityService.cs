@@ -80,6 +80,13 @@ public class VisibilityService
             return;
         }
 
+        // Visibility IPC internally accesses ObjectTable which requires the framework thread.
+        if (!Plugin.GameFramework.IsInFrameworkUpdateThread)
+        {
+            Plugin.GameFramework.RunOnFrameworkThread(() => SyncWithVisibility(player));
+            return;
+        }
+
         try
         {
             var voidedEntries = GetVisibilityPlayers(VisibilityType.Voidlist);
@@ -123,6 +130,12 @@ public class VisibilityService
         if (!IsVisibilityAvailable)
         {
             Plugin.PluginLog.Verbose("VisibilityService.SyncWithVisibility() - Visibility not available");
+            return;
+        }
+
+        if (!Plugin.GameFramework.IsInFrameworkUpdateThread)
+        {
+            Plugin.GameFramework.RunOnFrameworkThread(SyncWithVisibility);
             return;
         }
 
