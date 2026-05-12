@@ -121,12 +121,16 @@ public static class PlayerViewMapper
     private static void AddEncounters(int playerId, PlayerView playerView)
     {
         playerView.Encounters = [];
+        playerView.TotalEncounterTime   = Na;
+        playerView.LongestEncounterTime = Na;
+
         var pEncs = PlayerEncounterService.GetPlayerEncountersByPlayer(playerId);
-        if (pEncs == null)
+        if (pEncs == null || pEncs.Count == 0)
             return;
 
-        if (pEncs.Count == 0)
-            return;
+        var now        = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        long totalMs   = 0L;
+        long longestMs = 0L;
 
         foreach (var pEnc in pEncs)
         {
@@ -134,16 +138,29 @@ public static class PlayerViewMapper
             if (enc == null)
                 continue;
 
+            var durationMs = pEnc.Ended == 0
+                ? now - pEnc.Created
+                : pEnc.Ended - pEnc.Created;
+
+            if (durationMs < 0) durationMs = 0;
+
+            totalMs   += durationMs;
+            if (durationMs > longestMs)
+                longestMs = durationMs;
+
             playerView.Encounters.Add(new PlayerEncounterView
             {
-                Id = pEnc.Id,
-                Time = pEnc.Created.ToTimeSpan(),
-                Duration = pEnc.Ended == 0 ? (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - pEnc.Created).ToDuration() : (pEnc.Ended - pEnc.Created).ToDuration(),
-                Job = Sheets.ClassJobs[pEnc.JobId].Code,
-                Level = pEnc.JobLvl.ToString(),
+                Id       = pEnc.Id,
+                Time     = pEnc.Created.ToTimeSpan(),
+                Duration = durationMs.ToDuration(),
+                Job      = Sheets.ClassJobs[pEnc.JobId].Code,
+                Level    = pEnc.JobLvl.ToString(),
                 Location = GetLastLocation(enc.TerritoryTypeId)
             });
         }
+
+        if (totalMs   > 0) playerView.TotalEncounterTime   = totalMs.ToDuration();
+        if (longestMs > 0) playerView.LongestEncounterTime = longestMs.ToDuration();
     }
 
     private static void AddBioHistory(int playerId, PlayerView playerView)

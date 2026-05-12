@@ -25,6 +25,10 @@ public class PlayerView
 
     public string Appearance { get; set; } = null!;
 
+    public string TotalEncounterTime { get; set; } = null!;
+
+    public string LongestEncounterTime { get; set; } = null!;
+
     public string PreviousNames { get; set; } = null!;
 
     public string PreviousWorlds { get; set; } = null!;

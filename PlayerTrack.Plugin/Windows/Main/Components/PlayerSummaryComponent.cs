@@ -32,24 +32,28 @@ public class PlayerSummaryComponent : ViewComponent
         Plugin.PluginInterface.LanguageChanged += _ => IsLanguageChanged = true;
     }
 
+    // Labels for the two new encounter-time rows.
+    private const string TotalTimeLabel   = "Total Time";
+    private const string LongestEncLabel  = "Longest Enc.";
+
     public void CalcSize()
     {
         var offsets = new float[3];
         const string maxLengthName = "WWWWW";
 
-        var maxNameWidth = Math.Max(ImGui.CalcTextSize(Language.Name).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxHomeWorldWidth = Math.Max(ImGui.CalcTextSize(Language.Homeworld).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxFreeCompanyWidth = Math.Max(ImGui.CalcTextSize(Language.FreeCompany).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxLodestoneWidth = Math.Max(ImGui.CalcTextSize(Language.Lodestone).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxAppearanceWidth = Math.Max(ImGui.CalcTextSize(Language.Appearance).X, ImGui.CalcTextSize(maxLengthName).X);
+        var maxNameWidth         = Math.Max(ImGui.CalcTextSize(Language.Name).X,      ImGui.CalcTextSize(maxLengthName).X);
+        var maxHomeWorldWidth    = Math.Max(ImGui.CalcTextSize(Language.Homeworld).X,  ImGui.CalcTextSize(maxLengthName).X);
+        var maxLodestoneWidth    = Math.Max(ImGui.CalcTextSize(Language.Lodestone).X,  ImGui.CalcTextSize(maxLengthName).X);
+        var maxTotalTimeWidth    = Math.Max(ImGui.CalcTextSize(TotalTimeLabel).X,      ImGui.CalcTextSize(maxLengthName).X);
+        var maxLongestEncWidth   = Math.Max(ImGui.CalcTextSize(LongestEncLabel).X,     ImGui.CalcTextSize(maxLengthName).X);
 
-        var maxLastSeenWidth = Math.Max(ImGui.CalcTextSize(Language.LastSeen).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxSeenCountWidth = Math.Max(ImGui.CalcTextSize(Language.SeenCount).X, ImGui.CalcTextSize(maxLengthName).X);
+        var maxLastSeenWidth     = Math.Max(ImGui.CalcTextSize(Language.LastSeen).X,     ImGui.CalcTextSize(maxLengthName).X);
+        var maxSeenCountWidth    = Math.Max(ImGui.CalcTextSize(Language.SeenCount).X,    ImGui.CalcTextSize(maxLengthName).X);
         var maxLastLocationWidth = Math.Max(ImGui.CalcTextSize(Language.LastLocation).X, ImGui.CalcTextSize(maxLengthName).X);
+        var maxFirstSeenWidth    = Math.Max(ImGui.CalcTextSize(Language.FirstSeen).X,    ImGui.CalcTextSize(maxLengthName).X);
 
-        var maxFirstSeenWidth = Math.Max(ImGui.CalcTextSize(Language.FirstSeen).X, ImGui.CalcTextSize(maxLengthName).X);
-
-        var maxOffset0Width = Math.Max(maxNameWidth, Math.Max(maxHomeWorldWidth, Math.Max(maxFreeCompanyWidth, Math.Max(maxLodestoneWidth, maxAppearanceWidth))));
+        var maxOffset0Width = Math.Max(maxNameWidth,      Math.Max(maxHomeWorldWidth,
+                              Math.Max(maxLodestoneWidth, Math.Max(maxTotalTimeWidth, maxLongestEncWidth))));
         var maxOffset1Width = Math.Max(maxLastSeenWidth, Math.Max(maxSeenCountWidth, maxLastLocationWidth));
         var maxOffset2Width = maxFirstSeenWidth;
 
@@ -81,9 +85,9 @@ public class PlayerSummaryComponent : ViewComponent
         DrawFirstSeen(player);
         DrawHomeworld(player);
         DrawLastSeen(player);
-        DrawFreeCompany(player);
+        DrawTotalEncounterTime(player);
         DrawLastLocation(player);
-        DrawAppearance(player);
+        DrawLongestEncounterTime(player);
         DrawSeenCount(player);
         DrawCategoryTagHeadings();
         DrawCategoryTagAssignment(player);
@@ -177,11 +181,18 @@ public class PlayerSummaryComponent : ViewComponent
         Helper.TextColored(ImGuiColors.DalamudViolet, Language.Tags);
     }
 
-    private void DrawAppearance(PlayerView player)
+    private void DrawTotalEncounterTime(PlayerView player)
     {
-        ImGui.TextUnformatted(Language.Appearance);
+        ImGui.TextUnformatted(TotalTimeLabel);
         ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-        ImGui.TextUnformatted(player.Appearance);
+        ImGui.TextUnformatted(player.TotalEncounterTime);
+    }
+
+    private void DrawLongestEncounterTime(PlayerView player)
+    {
+        ImGui.TextUnformatted(LongestEncLabel);
+        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
+        ImGui.TextUnformatted(player.LongestEncounterTime);
     }
 
     private void DrawSeenCount(PlayerView player)
@@ -198,13 +209,6 @@ public class PlayerSummaryComponent : ViewComponent
         ImGui.TextUnformatted(Language.LastLocation);
         ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[2]);
         ImGui.TextUnformatted(player.LastLocation);
-    }
-
-    private void DrawFreeCompany(PlayerView player)
-    {
-        ImGui.TextUnformatted(Language.FreeCompany);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-        ImGui.TextUnformatted(player.FreeCompany);
     }
 
     private void DrawLastSeen(PlayerView player)
