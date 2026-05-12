@@ -236,8 +236,18 @@ public static class PlateWatcher
 
     private static void OnCharaCardClose(AddonEvent eventType, AddonArgs args)
     {
+        var wasProcessing     = _pendingProcessing;
         _pendingProcessing    = false;
         _lastProcessedRawName = string.Empty;
+
+        // If a plate was pending when the addon closed (e.g. the player left the
+        // zone before the server response arrived), fire OnPlateProcessed so that
+        // BioScraper can release _isProcessing and continue with the queue.
+        if (wasProcessing)
+        {
+            Plugin.PluginLog.Debug("[PlateWatcher] CharaCard closed while pending -- firing OnPlateProcessed.");
+            OnPlateProcessed?.Invoke();
+        }
     }
 
     // ----------------------------------------------------------------

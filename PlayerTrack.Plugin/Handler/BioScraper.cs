@@ -134,6 +134,16 @@ public static class BioScraper
     {
         try
         {
+            // Timeout guard: if the plate never delivered data within 30 s, release
+            // the lock so the queue can proceed.  This is a last-resort safety net;
+            // the primary release path is OnCharaCardClose -> OnPlateProcessed.
+            if (_isProcessing &&
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _lastOpenedMs > 30_000L)
+            {
+                Plugin.PluginLog.Warning("[BioScraper] Timed out waiting for CharaCard data; resetting _isProcessing.");
+                _isProcessing = false;
+            }
+
             // Guard: another open is already in flight.
             if (_isProcessing) return;
 
