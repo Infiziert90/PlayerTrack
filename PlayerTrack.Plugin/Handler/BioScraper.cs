@@ -12,7 +12,7 @@ namespace PlayerTrack.Handler;
 
 /// <summary>
 /// Automatically fetches Adventurer Plate bios for players that enter the zone
-/// without requiring DailyRoutines or any other external plugin.
+/// without requiring any external plugin.
 ///
 /// Design overview
 /// ---------------

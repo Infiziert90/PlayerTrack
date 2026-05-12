@@ -71,7 +71,7 @@ public static class PlateWatcher
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, AddonName, OnCharaCardOpen);
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate,  AddonName, OnCharaCardUpdate);
         Plugin.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, AddonName, OnCharaCardClose);
-        Plugin.ChatGuiHandler.ChatMessage += OnDailyRoutinesChatMessage;
+        Plugin.ChatGuiHandler.ChatMessage += OnSearchCommentChatMessage;
         Plugin.PluginLog.Information("[PlateWatcher] Registered for addon 'CharaCard' and IChatGui.ChatMessage.");
     }
 
@@ -82,26 +82,27 @@ public static class PlateWatcher
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, AddonName, OnCharaCardOpen);
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PostUpdate,  AddonName, OnCharaCardUpdate);
         Plugin.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, AddonName, OnCharaCardClose);
-        Plugin.ChatGuiHandler.ChatMessage -= OnDailyRoutinesChatMessage;
+        Plugin.ChatGuiHandler.ChatMessage -= OnSearchCommentChatMessage;
     }
 
     // ----------------------------------------------------------------
-    // DailyRoutines chat integration
+    // SimpleTweaks "Print Search Comment" chat integration
     // ----------------------------------------------------------------
 
     /// <summary>
-    /// Listens for DailyRoutines' "Search Info from &lt;Player&gt;" chat output and
-    /// runs categorizer rules against the bio text it contains.
+    /// Listens for the "Search Info from &lt;Player&gt;" chat output produced by the
+    /// SimpleTweaks "Print Search Comment" tweak and runs categorizer rules
+    /// against the bio text it contains.
     ///
-    /// Expected SeString payload layout emitted by DailyRoutines:
-    ///   TextPayload  -- contains "Search Info from" somewhere in its text
+    /// Expected SeString payload layout:
+    ///   TextPayload   -- contains "Search Info from" somewhere in its text
     ///   PlayerPayload -- the linked player (carries PlayerName and World)
     ///   TextPayload(s) -- the plate bio content
     ///
     /// With debug logging enabled every payload is written to /xllog so the
-    /// exact layout can be verified against real DailyRoutines output.
+    /// exact layout can be verified against live output.
     /// </summary>
-    private static void OnDailyRoutinesChatMessage(IHandleableChatMessage chatMessage)
+    private static void OnSearchCommentChatMessage(IHandleableChatMessage chatMessage)
     {
         try
         {
@@ -220,7 +221,7 @@ public static class PlateWatcher
         }
         catch (Exception ex)
         {
-            Plugin.PluginLog.Error(ex, "[PlateWatcher/Chat] Unhandled exception in OnDailyRoutinesChatMessage.");
+            Plugin.PluginLog.Error(ex, "[PlateWatcher/Chat] Unhandled exception in OnSearchCommentChatMessage.");
         }
     }
 
