@@ -28,6 +28,10 @@ public class PlayerCacheService
     private Dictionary<int, int> DbCategoryRanks = null!;
     private const long NinetyDaysInMilliseconds = 7776000000;
 
+    // Advanced sort state -- session-only, not persisted.
+    private PlayerSortType _activeSortType = PlayerSortType.ByCategory;
+    private uint _activeZoneId = 0;
+
     public event Action? OnCacheUpdated;
 
     public PlayerCacheService()
@@ -284,6 +288,28 @@ public class PlayerCacheService
             OnCacheUpdated?.Invoke();
         }
     }
+
+    // ------------------------------------------------------------------
+    // Advanced sort API
+    // ------------------------------------------------------------------
+
+    public PlayerSortType GetSortType() => _activeSortType;
+
+    public uint GetSortZoneId() => _activeZoneId;
+
+    /// <summary>
+    /// Changes the active sort criteria and immediately resorts all caches.
+    /// Pass <paramref name="zoneId"/> = 0 (or omit) when the sort type is not
+    /// <see cref="PlayerSortType.ByZoneEncounterTime"/>.
+    /// </summary>
+    public void SetSortType(PlayerSortType sortType, uint zoneId = 0)
+    {
+        _activeSortType = sortType;
+        _activeZoneId   = zoneId;
+        Resort();
+    }
+
+    // ------------------------------------------------------------------
 
     public void Resort()
     {
@@ -683,12 +709,28 @@ public class PlayerCacheService
         {
             noCategoryRank = noCategoryPlacement switch
             {
-                NoCategoryPlacement.Top => categoryRanks.Values.Min() - 1,
+                NoCategoryPlacement.Top    => categoryRanks.Values.Min() - 1,
                 NoCategoryPlacement.Bottom => categoryRanks.Values.Max() + 1,
-                _ => 0
+                _                          => 0
             };
         }
-        Comparer = new PlayerComparer(ServiceContext.CategoryService.GetCategoryRanks(), noCategoryRank);
+
+        // Precompute per-player sort values for the expensive time-based sorts.
+        var sortValues = new Dictionary<int, long>();
+        if (_activeSortType == PlayerSortType.ByTotalEncounterTime)
+        {
+            sortValues = RepositoryContext.PlayerEncounterRepository.GetEncounterTimeSumsByPlayer();
+        }
+        else if (_activeSortType == PlayerSortType.ByZoneEncounterTime && _activeZoneId != 0)
+        {
+            sortValues = RepositoryContext.PlayerEncounterRepository.GetEncounterTimeSumsByPlayerAndZone(_activeZoneId);
+        }
+
+        Comparer = new PlayerComparer(
+            ServiceContext.CategoryService.GetCategoryRanks(),
+            noCategoryRank,
+            _activeSortType,
+            sortValues);
     }
 
     private void AddPlayerToCaches(Player player)

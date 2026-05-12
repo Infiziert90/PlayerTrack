@@ -153,6 +153,65 @@ public class PlayerEncounterRepository : BaseRepository
         }
     }
 
+    /// <summary>
+    /// Returns the cumulative encounter duration (in milliseconds) per player across all zones.
+    /// Only completed encounters (ended &gt; 0) are counted.
+    /// </summary>
+    public Dictionary<int, long> GetEncounterTimeSumsByPlayer()
+    {
+        Plugin.PluginLog.Verbose("Entering PlayerEncounterRepository.GetEncounterTimeSumsByPlayer()");
+        try
+        {
+            const string sql = @"
+                SELECT pe.player_id,
+                       SUM(CASE WHEN pe.ended > 0 THEN pe.ended - pe.created ELSE 0 END) AS total_ms
+                FROM player_encounters pe
+                GROUP BY pe.player_id";
+            return Connection.Query<PlayerTimeSumDTO>(sql)
+                             .ToDictionary(r => r.player_id, r => r.total_ms);
+        }
+        catch (Exception ex)
+        {
+            Plugin.PluginLog.Error(ex, "Failed to get encounter time sums by player.");
+            return new Dictionary<int, long>();
+        }
+    }
+
+    /// <summary>
+    /// Returns the cumulative encounter duration (in milliseconds) per player for a
+    /// specific territory type.  Only completed encounters (ended &gt; 0) are counted.
+    /// </summary>
+    public Dictionary<int, long> GetEncounterTimeSumsByPlayerAndZone(uint territoryTypeId)
+    {
+        Plugin.PluginLog.Verbose($"Entering PlayerEncounterRepository.GetEncounterTimeSumsByPlayerAndZone(): {territoryTypeId}");
+        try
+        {
+            const string sql = @"
+                SELECT pe.player_id,
+                       SUM(CASE WHEN pe.ended > 0 THEN pe.ended - pe.created ELSE 0 END) AS total_ms
+                FROM player_encounters pe
+                JOIN encounters e ON pe.encounter_id = e.id
+                WHERE e.territory_type_id = @territory_type_id
+                GROUP BY pe.player_id";
+            return Connection.Query<PlayerTimeSumDTO>(sql, new { territory_type_id = (int)territoryTypeId })
+                             .ToDictionary(r => r.player_id, r => r.total_ms);
+        }
+        catch (Exception ex)
+        {
+            Plugin.PluginLog.Error(ex, $"Failed to get encounter time sums for territory {territoryTypeId}.");
+            return new Dictionary<int, long>();
+        }
+    }
+
+    // Private DTO used only by the aggregate queries above.
+    private class PlayerTimeSumDTO
+    {
+        // ReSharper disable InconsistentNaming
+        public int  player_id { get; set; }
+        public long total_ms  { get; set; }
+        // ReSharper restore InconsistentNaming
+    }
+
     public bool CreatePlayerEncounters(List<PlayerEncounter> playerEncounters)
     {
         Plugin.PluginLog.Verbose($"Entering PlayerEncounterRepository.CreatePlayerEncounters(): {playerEncounters}");

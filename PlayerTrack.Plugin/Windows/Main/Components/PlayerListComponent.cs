@@ -19,6 +19,7 @@ public class PlayerListComponent : ViewComponent
 {
     private const int DebounceTime = 1000;
     private readonly IMainPresenter Presenter;
+    private readonly PlayerAdvancedFilterComponent AdvancedFilter;
     private List<Category> Categories = null!;
     private List<string> CategoryNames = null!;
     private bool PendingFilterUpdate;
@@ -27,7 +28,8 @@ public class PlayerListComponent : ViewComponent
 
     public PlayerListComponent(IMainPresenter presenter)
     {
-        Presenter = presenter;
+        Presenter       = presenter;
+        AdvancedFilter  = new PlayerAdvancedFilterComponent(presenter);
     }
 
     public delegate void PlayerListComponentOpenConfigDelegate();
@@ -76,7 +78,9 @@ public class PlayerListComponent : ViewComponent
             return;
         }
 
-        var shouldShowSeparator = Config.ShowCategorySeparator && string.IsNullOrEmpty(Config.SearchInput);
+        var shouldShowSeparator = Config.ShowCategorySeparator
+                                   && string.IsNullOrEmpty(Config.SearchInput)
+                                   && ServiceContext.PlayerCacheService.GetSortType() == PlayerSortType.ByCategory;
 
         using var clipper = new ListClipper(playersCount);
         while (clipper.Step())
@@ -208,6 +212,9 @@ public class PlayerListComponent : ViewComponent
             // Dummy spacing if nothing available so can still open menu
             if (Config is { ShowSearchBox: false, ShowPlayerFilter: false })
                 ImGuiHelpers.ScaledDummy(new Vector2(Config.MainWindowWidth, 5f));
+
+            // Advanced sort / filter controls
+            AdvancedFilter.Draw();
         }
 
         // Open config popup on right click

@@ -184,6 +184,29 @@ public class EncounterRepository : BaseRepository
         }
     }
 
+    /// <summary>
+    /// Returns every distinct territory type ID that appears in at least one completed encounter.
+    /// Used to populate the zone selector in the advanced sort filter.
+    /// </summary>
+    public List<uint> GetDistinctTerritoryTypeIds()
+    {
+        Plugin.PluginLog.Verbose("Entering EncounterRepository.GetDistinctTerritoryTypeIds()");
+        try
+        {
+            const string sql = @"
+                SELECT DISTINCT territory_type_id
+                FROM encounters
+                WHERE ended > 0
+                ORDER BY territory_type_id";
+            return Connection.Query<uint>(sql).ToList();
+        }
+        catch (Exception ex)
+        {
+            Plugin.PluginLog.Error(ex, "Failed to get distinct territory type IDs.");
+            return new List<uint>();
+        }
+    }
+
     public void DeleteEncountersWithRelations(List<int> currentBatch)
     {
         Plugin.PluginLog.Verbose($"Entering EncounterRepository.DeleteEncountersWithRelations(): {string.Join(", ", currentBatch)}");
