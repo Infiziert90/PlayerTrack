@@ -76,7 +76,10 @@ public class CategorizerComponent : ConfigViewComponent
 
     private void DrawPlateBioTab()
     {
-        var categories = ServiceContext.CategoryService.GetCategories();
+        // Exclude dynamic social-list categories (FL, FC, etc.) -- they are
+        // managed by the social list sync system and must not be assigned via
+        // keyword rules.
+        var categories = ServiceContext.CategoryService.GetCategories(includeDynamic: false);
         if (categories.Count == 0)
         {
             ImGui.TextUnformatted(
@@ -248,7 +251,8 @@ public class CategorizerComponent : ConfigViewComponent
 
     private void DrawEncounterTab()
     {
-        var categories = ServiceContext.CategoryService.GetCategories();
+        // Exclude dynamic social-list categories -- same reason as DrawPlateBioTab.
+        var categories = ServiceContext.CategoryService.GetCategories(includeDynamic: false);
         if (categories.Count == 0)
         {
             ImGui.TextUnformatted(
