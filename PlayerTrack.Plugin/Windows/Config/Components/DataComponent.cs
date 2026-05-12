@@ -37,6 +37,10 @@ public class DataComponent : ConfigViewComponent
     private string SqlResultDisplay = string.Empty;
     private Tuple<ActionRequest, LocalPlayer>? LocalPlayerToDelete;
 
+    // UnassignCategories action state
+    private List<Category> _unassignCategories = [];
+    private readonly HashSet<int> _selectedCategoryIds = [];
+
     public override void Draw() => DrawControls();
 
     private void DrawControls()
@@ -330,6 +334,21 @@ public class DataComponent : ConfigViewComponent
                         ItemsToDeleteCount = ServiceContext.EncounterService.GetEncountersForDeletionCount();
                         TotalItemsCount = EncounterService.GetEncountersCount();
                     }),
+                DataActionType.UnassignCategories => Task.Run(() =>
+                    {
+                        RunBackup();
+                        var ids = _selectedCategoryIds.ToArray();
+                        foreach (var categoryId in ids)
+                            PlayerCategoryService.UnassignCategoryFromAllPlayers(categoryId);
+                        ServiceContext.PlayerDataService.RecalculatePlayerRankings();
+                        HandleTaskSuccess();
+                    })
+                    .ContinueWith(_ =>
+                    {
+                        HandlePostTaskSuccess();
+                        _selectedCategoryIds.Clear();
+                        RefreshUnassignCounts();
+                    }),
                 _ => throw new ArgumentOutOfRangeException(),
             };
         }
@@ -358,6 +377,20 @@ public class DataComponent : ConfigViewComponent
         ItemsToDeleteCount = 0;
         TotalItemsCount = 0;
         IsDirty = true;
+    }
+
+    /// <summary>
+    /// Recomputes the assignment counts for the UnassignCategories action.
+    /// ItemsToDeleteCount = assignments that will be removed (selected categories).
+    /// TotalItemsCount    = total assignments across all categories (denominator).
+    /// </summary>
+    private void RefreshUnassignCounts()
+    {
+        ItemsToDeleteCount = _selectedCategoryIds
+            .Sum(id => ServiceContext.PlayerCacheService.GetCategoryPlayersCount(id));
+        TotalItemsCount = _unassignCategories
+            .Sum(c => ServiceContext.PlayerCacheService.GetCategoryPlayersCount(c.Id));
+        if (TotalItemsCount == 0) TotalItemsCount = ItemsToDeleteCount; // avoid divide-by-zero in message
     }
 
     private void DrawGlobalOptions()
@@ -454,6 +487,46 @@ public class DataComponent : ConfigViewComponent
                             ServiceContext.ConfigService.SaveConfig(Config);
                             IsDirty = true;
                             StatusMessage = string.Empty;
+                        }
+                    }
+                }
+                break;
+            case DataActionType.UnassignCategories:
+                if (IsDirty)
+                {
+                    IsDirty = false;
+                    _selectedCategoryIds.Clear();
+                    _unassignCategories = ServiceContext.CategoryService.GetCategories();
+                    ItemsToDeleteCount = 0;
+                    TotalItemsCount = 0;
+                    StatusMessage = string.Empty;
+                }
+
+                Helper.TextColored(ImGuiColors.DalamudViolet, "Select categories to remove all player assignments from:");
+                ImGuiHelpers.ScaledDummy(2f);
+
+                if (_unassignCategories.Count == 0)
+                {
+                    ImGui.TextUnformatted("No categories found.");
+                }
+                else
+                {
+                    using (ImRaii.PushIndent(10f))
+                    {
+                        foreach (var cat in _unassignCategories)
+                        {
+                            var isChecked = _selectedCategoryIds.Contains(cat.Id);
+                            // Show "(dynamic)" suffix for social-list-synced categories.
+                            var label = cat.SocialListId != 0
+                                ? $"{cat.Name} (dynamic)###UnassignCat{cat.Id}"
+                                : $"{cat.Name}###UnassignCat{cat.Id}";
+                            if (ImGui.Checkbox(label, ref isChecked))
+                            {
+                                if (isChecked) _selectedCategoryIds.Add(cat.Id);
+                                else           _selectedCategoryIds.Remove(cat.Id);
+                                RefreshUnassignCounts();
+                                StatusMessage = string.Empty;
+                            }
                         }
                     }
                 }

@@ -5,4 +5,5 @@ public enum DataActionType
     DeletePlayers,
     DeletePlayerSettings,
     DeleteEncounters,
+    UnassignCategories,
 }

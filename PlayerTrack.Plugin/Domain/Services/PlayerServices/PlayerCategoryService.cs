@@ -147,6 +147,18 @@ public class PlayerCategoryService
         ServiceContext.PlayerDataService.RecalculatePlayerRankings();
     });
 
+    /// <summary>
+    /// Removes every player assignment for <paramref name="categoryId"/> from
+    /// both the database and the in-memory cache.  The category record itself is
+    /// not deleted.
+    /// </summary>
+    public static void UnassignCategoryFromAllPlayers(int categoryId)
+    {
+        Plugin.PluginLog.Verbose($"Entering PlayerCategoryService.UnassignCategoryFromAllPlayers(): {categoryId}");
+        RepositoryContext.PlayerCategoryRepository.DeletePlayerCategoryByCategoryId(categoryId);
+        ServiceContext.PlayerDataService.ClearCategoryFromPlayers(categoryId);
+    }
+
     public static void DeletePlayerCategoryByCategoryId(int categoryId) => RepositoryContext.PlayerCategoryRepository.DeletePlayerCategoryByCategoryId(categoryId);
 
     public static void DeletePlayerCategoryByPlayerId(int playerId) => RepositoryContext.PlayerCategoryRepository.DeletePlayerCategoryByPlayerId(playerId);
