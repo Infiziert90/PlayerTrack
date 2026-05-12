@@ -153,6 +153,19 @@ public class PlayerProcessService
         {
             HandleContentIdUpdateOnly(player, toadPlayer);
             Plugin.PluginLog.Verbose("Encounter is missing.");
+
+            // Context menu / user request: always open the panel regardless of encounter state.
+            if (isUserRequest && player != null)
+            {
+                OnPlayerSelected?.Invoke(player);
+            }
+            // Bio scraper: notify for known players entering the zone even without an encounter,
+            // so bios can be collected independently of encounter tracking.
+            else if (isCurrent && !isUserRequest && player != null)
+            {
+                player.EntityId = toadPlayer.EntityId; // EntityId is session-specific; keep it current.
+                OnCurrentPlayerAdded?.Invoke(player);
+            }
             return;
         }
 
@@ -160,6 +173,13 @@ public class PlayerProcessService
         {
             HandleContentIdUpdateOnly(player, toadPlayer);
             Plugin.PluginLog.Verbose("Encounter is not set to save players.");
+
+            // Bio scraper: notify for known players even when the encounter does not save players.
+            if (isCurrent && player != null)
+            {
+                player.EntityId = toadPlayer.EntityId;
+                OnCurrentPlayerAdded?.Invoke(player);
+            }
             return;
         }
 

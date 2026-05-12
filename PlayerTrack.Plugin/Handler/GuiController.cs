@@ -62,7 +62,7 @@ public static class GuiController
                 return;
 
             ConfigView.OnWindowConfigChanged -= WindowConfigChanged;
-            ConfigView.OnPlayerConfigChanged -= Presenter.ClearCache;
+            ConfigView.OnPlayerConfigChanged -= Presenter.ReloadPlayer;
             ConfigView.OnPlayerConfigChanged -= NameplateHandler.RefreshNameplates;
             ConfigView.OnContextMenuUpdated -= ContextMenuHandler.Restart;
         }
