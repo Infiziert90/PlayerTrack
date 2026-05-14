@@ -18,6 +18,11 @@ public class VisibilityService
     private readonly VisibilityConsumer VisibilityConsumer;
     private int IsSyncing;
 
+    // Keys of players PlayerTrack has placed into a visibility list.
+    // Used to short-circuit framework-thread dispatch for players with VisibilityType.None
+    // that we have never tracked, avoiding stutter when many players update simultaneously.
+    private readonly HashSet<string> _trackedKeys = [];
+
     public VisibilityService()
     {
         Plugin.PluginLog.Verbose("Entering VisibilityService.VisibilityService()");
@@ -80,6 +85,16 @@ public class VisibilityService
             return;
         }
 
+        // Fast pre-check: if the player has no visibility type set and has never been tracked
+        // by PlayerTrack, there is no IPC work to do. Skip the framework-thread dispatch to
+        // avoid queuing dozens of callbacks simultaneously during zone transitions.
+        var visibilityTypeFast = PlayerConfigService.GetVisibilityType(player);
+        if (visibilityTypeFast == VisibilityType.None && !_trackedKeys.Contains(player.Key))
+        {
+            Plugin.PluginLog.Verbose($"VisibilityService.SyncWithVisibility() - {player.Name} - skipped (None, not tracked)");
+            return;
+        }
+
         // Visibility IPC internally accesses ObjectTable which requires the framework thread.
         if (!Plugin.GameFramework.IsInFrameworkUpdateThread)
         {
@@ -103,16 +118,22 @@ public class VisibilityService
 
                     if (whitelistedEntries.ContainsKey(player.Key))
                         VisibilityConsumer.RemoveFromWhiteList(player.Name, player.WorldId);
+
+                    _trackedKeys.Remove(player.Key);
                     break;
                 case VisibilityType.Voidlist:
                     Plugin.PluginLog.Verbose($"VisibilityService.SyncWithVisibility() - {player.Name} - {visibilityType} - Adding to void list");
                     if (!voidedEntries.ContainsKey(player.Key))
                         VisibilityConsumer.AddToVoidList(player.Name, player.WorldId, Reason);
+
+                    _trackedKeys.Add(player.Key);
                     break;
                 case VisibilityType.Whitelist:
                     Plugin.PluginLog.Verbose($"VisibilityService.SyncWithVisibility() - {player.Name} - {visibilityType} - Adding to white list");
                     if (!whitelistedEntries.ContainsKey(player.Key))
                         VisibilityConsumer.AddToWhiteList(player.Name, player.WorldId, Reason);
+
+                    _trackedKeys.Add(player.Key);
                     break;
                 default:
                     Plugin.PluginLog.Warning($"VisibilityService.SyncWithVisibility() - {player.Name} - {visibilityType} - Unhandled");
@@ -161,14 +182,22 @@ public class VisibilityService
             // add players to void list
             voidList = GetVisibilityPlayers(VisibilityType.Voidlist);
             foreach (var (key, value) in voidedPlayers)
+            {
                 if (!voidList.ContainsKey(key))
                     VisibilityConsumer.AddToVoidList(value.Name, value.WorldId, Reason);
+
+                _trackedKeys.Add(key);
+            }
 
             // add players to white list
             whiteList = GetVisibilityPlayers(VisibilityType.Whitelist);
             foreach (var (key, value) in whitelistedPlayers)
+            {
                 if (!whiteList.ContainsKey(key))
                     VisibilityConsumer.AddToWhiteList(value.Name, value.WorldId, Reason);
+
+                _trackedKeys.Add(key);
+            }
 
             // add void list entries to ptrack
             voidList = GetVisibilityPlayers(VisibilityType.Voidlist);
@@ -236,45 +265,4 @@ public class VisibilityService
 
     private static bool IsSyncedEntry(string reason) => reason.Equals(Reason, StringComparison.OrdinalIgnoreCase);
 
-    private Dictionary<string, VisibilityEntry> GetVisibilityPlayers(VisibilityType visibilityType)
-    {
-        List<string> rawVisibilityEntries;
-        switch (visibilityType)
-        {
-            case VisibilityType.None:
-                return new Dictionary<string, VisibilityEntry>();
-            case VisibilityType.Voidlist:
-                rawVisibilityEntries = VisibilityConsumer.GetVoidListEntries().ToList();
-                break;
-            case VisibilityType.Whitelist:
-                rawVisibilityEntries = VisibilityConsumer.GetWhiteListEntries().ToList();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(visibilityType), visibilityType, null);
-        }
-
-        Dictionary<string, VisibilityEntry> visibilityEntries = new();
-        if (rawVisibilityEntries.Count == 0)
-            return visibilityEntries;
-
-        foreach (var voidListEntry in rawVisibilityEntries)
-        {
-            try
-            {
-                var parts = voidListEntry.Split(" ");
-                if (parts.Length != 4)
-                    continue;
-
-                var visibilityEntry = new VisibilityEntry { Name = string.Concat(parts[0], " ", parts[1]), HomeWorldId = Convert.ToUInt32(parts[2]), Reason = parts[3], };
-                visibilityEntry.Key = PlayerKeyBuilder.Build(visibilityEntry.Name, visibilityEntry.HomeWorldId);
-                visibilityEntries.Add(visibilityEntry.Key, visibilityEntry);
-            }
-            catch (Exception ex)
-            {
-                Plugin.PluginLog.Error(ex, "Failed to load visibility entry.");
-            }
-        }
-
-        return visibilityEntries;
-    }
-}
+    p
