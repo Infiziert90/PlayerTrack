@@ -1,7 +1,5 @@
 # PlayerTrack
 Keep track of players you meet. 
-A Dalamud plugin for FINAL FANTASY XIV that keeps a personal record of every player you meet.
-
 ## Description
 PlayerTrack helps you keep a record of who you meet and the content you played together. 
 Organize players into categories, keep notes, and track them across name/world changes. 
