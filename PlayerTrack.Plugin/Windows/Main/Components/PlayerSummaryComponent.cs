@@ -265,13 +265,6 @@ public class PlayerSummaryComponent : ViewComponent
                 ImGui.SameLine();
                 using (ImRaii.PushFont(UiBuilder.IconFont))
                     Helper.TextColored(ImGuiColors.DalamudYellow, FontAwesomeIcon.InfoCircle.ToIconString());
-                if (ximAvailable)
-                {
-                    ImGui.SameLine();
-                    DrawXimButton(player);
-                }
-                ImGui.SameLine();
-                DrawPlayerSearchButton(player);
             }
 
             if (ImGui.IsItemHovered())
@@ -279,20 +272,23 @@ public class PlayerSummaryComponent : ViewComponent
         }
         else
         {
-            using (ImRaii.Group())
-            {
-                ImGui.TextUnformatted(player.Name);
-                if (ximAvailable)
-                {
-                    ImGui.SameLine();
-                    DrawXimButton(player);
-                }
-                ImGui.SameLine();
-                DrawPlayerSearchButton(player);
-            }
+            ImGui.TextUnformatted(player.Name);
         }
 
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
+        if (ximAvailable)
+        {
+            ImGui.SameLine();
+            DrawXimButton(player);
+        }
+        ImGui.SameLine();
+        DrawPlayerSearchButton(player);
+
+        var spacing = ImGui.GetStyle().ItemSpacing.X;
+        var rightX = ImGui.GetItemRectMax().X - ImGui.GetWindowPos().X;
+        if (rightX + spacing >= CurrentOffsets[1])
+            ImGui.SameLine(0f, spacing);
+        else
+            ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
     }
 
     private static void DrawXimButton(PlayerView player)
@@ -316,14 +312,14 @@ public class PlayerSummaryComponent : ViewComponent
         }
 
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Player Search (/search)");
+            ImGui.SetTooltip("Player Search (/psearch)");
     }
 
     private static void OpenPlayerSearch(PlayerView player)
     {
         try
         {
-            Plugin.CommandManager.ProcessCommand($"/search {player.Name}");
+            Plugin.CommandManager.ProcessCommand($"/psearch {player.Name}");
         }
         catch (Exception ex)
         {

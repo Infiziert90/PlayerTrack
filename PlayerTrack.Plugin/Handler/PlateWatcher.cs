@@ -446,16 +446,140 @@ public static class PlateWatcher
 
     private static bool Matches(string bio, Models.CategoryRule rule)
     {
+        switch (rule.MatchMode)
+        {
+            case Models.RuleMatchMode.Regex:
+                return MatchesRegex(bio, rule);
+            case Models.RuleMatchMode.Shorthand:
+                return MatchesShorthand(bio, rule);
+        }
+
         if (rule.WholeWord)
         {
             var opts = rule.CaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
-            return Regex.IsMatch(bio, @"\b" + Regex.Escape(rule.Keyword) + @"\b", opts);
+            // \b doesn't work for tokens ending in non-word chars like "F+", so use
+            // explicit shorthand-token boundaries that treat '+' as part of the token.
+            var pattern = @"(?<![A-Za-z0-9+])" + Regex.Escape(rule.Keyword) + @"(?![A-Za-z0-9+])";
+            return Regex.IsMatch(bio, pattern, opts);
         }
 
         var cmp = rule.CaseSensitive
             ? StringComparison.Ordinal
             : StringComparison.OrdinalIgnoreCase;
         return bio.Contains(rule.Keyword, cmp);
+    }
+
+    private static bool MatchesRegex(string bio, Models.CategoryRule rule)
+    {
+        if (string.IsNullOrEmpty(rule.Keyword)) return false;
+        try
+        {
+            var opts = rule.CaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+            return Regex.IsMatch(bio, rule.Keyword, opts);
+        }
+        catch (ArgumentException ex)
+        {
+            Plugin.PluginLog.Warning(ex, $"[PlateWatcher] Invalid regex in rule: \"{rule.Keyword}\"");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Shorthand-token matcher. Splits the bio on " lf " into primary / secondary
+    /// segments, tokenizes each on '/', and tests rule.PrimaryToken (and optionally
+    /// rule.SecondaryToken) against the parsed tokens using a satisfier set derived
+    /// from the full rule list. Base tokens (e.g. "F") are satisfied by themselves
+    /// OR their "+" extended form ("F+") when that extended form exists in any rule;
+    /// extended tokens are satisfied strictly by themselves.
+    /// </summary>
+    private static bool MatchesShorthand(string bio, Models.CategoryRule rule)
+    {
+        if (string.IsNullOrWhiteSpace(rule.PrimaryToken)) return false;
+        if (!TrySplitLf(bio, out var leftRaw, out var rightRaw)) return false;
+
+        var leftTokens  = TokenizeShorthand(leftRaw);
+        var rightTokens = TokenizeShorthand(rightRaw);
+
+        var tokenUniverse = BuildTokenUniverse();
+        var satisfiers    = BuildSatisfiers(tokenUniverse);
+
+        if (!IsSatisfiedIn(rule.PrimaryToken, leftTokens, satisfiers)) return false;
+
+        if (!string.IsNullOrWhiteSpace(rule.SecondaryToken) &&
+            !IsSatisfiedIn(rule.SecondaryToken, rightTokens, satisfiers))
+            return false;
+
+        return true;
+    }
+
+    private static bool TrySplitLf(string input, out string left, out string right)
+    {
+        left = right = string.Empty;
+        if (string.IsNullOrEmpty(input)) return false;
+        var match = Regex.Match(input, @"\s+lf\s+", RegexOptions.IgnoreCase);
+        if (!match.Success) return false;
+        left  = input[..match.Index];
+        right = input[(match.Index + match.Length)..];
+        return true;
+    }
+
+    private static HashSet<string> TokenizeShorthand(string segment)
+    {
+        var tokens = new HashSet<string>(StringComparer.Ordinal);
+        if (string.IsNullOrWhiteSpace(segment)) return tokens;
+        foreach (var raw in segment.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            tokens.Add(raw.ToUpperInvariant());
+        return tokens;
+    }
+
+    private static HashSet<string> BuildTokenUniverse()
+    {
+        var universe = new HashSet<string>(StringComparer.Ordinal);
+        var rules = ServiceContext.ConfigService.GetConfig().CategorizerRules;
+        foreach (var r in rules)
+        {
+            if (r.MatchMode != Models.RuleMatchMode.Shorthand) continue;
+            if (!string.IsNullOrWhiteSpace(r.PrimaryToken))   universe.Add(r.PrimaryToken.Trim().ToUpperInvariant());
+            if (!string.IsNullOrWhiteSpace(r.SecondaryToken)) universe.Add(r.SecondaryToken.Trim().ToUpperInvariant());
+        }
+        return universe;
+    }
+
+    private static Dictionary<string, HashSet<string>> BuildSatisfiers(HashSet<string> tokenUniverse)
+    {
+        var map = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+        foreach (var t in tokenUniverse)
+        {
+            if (t.EndsWith("+", StringComparison.Ordinal))
+            {
+                map[t] = new HashSet<string>(StringComparer.Ordinal) { t };
+            }
+            else
+            {
+                var set = new HashSet<string>(StringComparer.Ordinal) { t };
+                var extended = t + "+";
+                if (tokenUniverse.Contains(extended)) set.Add(extended);
+                map[t] = set;
+            }
+        }
+        return map;
+    }
+
+    private static bool IsSatisfiedIn(string ruleToken, HashSet<string> parsedTokens, Dictionary<string, HashSet<string>> satisfiers)
+    {
+        var key = ruleToken.Trim().ToUpperInvariant();
+        if (!satisfiers.TryGetValue(key, out var set))
+        {
+            // Rule references a token not in the universe (shouldn't happen since we
+            // built the universe from rules, but be defensive).
+            set = key.EndsWith("+", StringComparison.Ordinal)
+                ? new HashSet<string>(StringComparer.Ordinal) { key }
+                : new HashSet<string>(StringComparer.Ordinal) { key, key + "+" };
+        }
+
+        foreach (var s in set)
+            if (parsedTokens.Contains(s)) return true;
+        return false;
     }
 
     // ----------------------------------------------------------------

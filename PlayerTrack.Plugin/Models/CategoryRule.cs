@@ -3,6 +3,19 @@ using System;
 namespace PlayerTrack.Models;
 
 /// <summary>
+/// How a CategoryRule's keyword/tokens are evaluated against the plate bio.
+/// </summary>
+public enum RuleMatchMode
+{
+    /// <summary>Substring or whole-word literal match against <see cref="CategoryRule.Keyword"/>.</summary>
+    Substring = 0,
+    /// <summary>Treat <see cref="CategoryRule.Keyword"/> as a raw .NET regex pattern.</summary>
+    Regex = 1,
+    /// <summary>Shorthand-token mode: match PrimaryToken (and optional SecondaryToken) across a " lf " separator.</summary>
+    Shorthand = 2,
+}
+
+/// <summary>
 /// A single keyword-to-category mapping rule evaluated against
 /// a player's adventurer plate bio/comment field.
 /// </summary>
@@ -43,6 +56,25 @@ public sealed class CategoryRule
     /// Defaults to true.
     /// </summary>
     public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Determines how <see cref="Keyword"/> / <see cref="PrimaryToken"/> / <see cref="SecondaryToken"/>
+    /// are evaluated against the plate bio. Defaults to <see cref="RuleMatchMode.Substring"/> so
+    /// rules persisted before this field was added behave identically.
+    /// </summary>
+    public RuleMatchMode MatchMode { get; set; } = RuleMatchMode.Substring;
+
+    /// <summary>
+    /// Shorthand mode: the token required on the LEFT of the " lf " separator
+    /// (e.g. "F" or "F+"). Ignored in other modes.
+    /// </summary>
+    public string PrimaryToken { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Shorthand mode: optional token required on the RIGHT of the " lf " separator.
+    /// When empty, only the primary side is checked. Ignored in other modes.
+    /// </summary>
+    public string SecondaryToken { get; set; } = string.Empty;
 
     /// <summary>
     /// Returns a short textual summary suitable for log output.

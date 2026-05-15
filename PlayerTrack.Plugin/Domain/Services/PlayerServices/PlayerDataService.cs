@@ -47,8 +47,7 @@ public class PlayerDataService
             if (playerFromContentId != null)
                 return playerFromContentId;
 
-            var playerFromNameWorldId = GetPlayer(name, worldId);
-            return playerFromNameWorldId?.ContentId == 0 ? playerFromNameWorldId : null;
+            return GetPlayer(name, worldId);
         }
 
         return GetPlayer(name, worldId);

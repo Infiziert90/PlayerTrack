@@ -24,10 +24,33 @@ public class CategorizerComponent : ConfigViewComponent
     // Plate bio rule staging fields
     // ----------------------------------------------------------------
 
-    private string _newKeyword       = string.Empty;
+    private string _newKeyword         = string.Empty;
+    private string _newPrimaryToken    = string.Empty;
+    private string _newSecondaryToken  = string.Empty;
     private bool   _newCaseSensitive;
-    private bool   _newWholeWord;
+    private int    _newModeIndex; // index into ModeNames
     private int    _newCategoryIndex;
+
+    // UI-level mode names (combine MatchMode + WholeWord for ergonomics).
+    private static readonly string[] ModeNames = { "Substring", "Whole Word", "Regex", "Shorthand" };
+
+    private static int RuleToModeIndex(CategoryRule rule) => rule.MatchMode switch
+    {
+        RuleMatchMode.Regex     => 2,
+        RuleMatchMode.Shorthand => 3,
+        _                       => rule.WholeWord ? 1 : 0,
+    };
+
+    private static void ApplyModeIndex(CategoryRule rule, int index)
+    {
+        switch (index)
+        {
+            case 1: rule.MatchMode = RuleMatchMode.Substring; rule.WholeWord = true;  break;
+            case 2: rule.MatchMode = RuleMatchMode.Regex;     rule.WholeWord = false; break;
+            case 3: rule.MatchMode = RuleMatchMode.Shorthand; rule.WholeWord = false; break;
+            default: rule.MatchMode = RuleMatchMode.Substring; rule.WholeWord = false; break;
+        }
+    }
 
     // ----------------------------------------------------------------
     // Encounter rule staging fields
@@ -124,9 +147,9 @@ public class CategorizerComponent : ConfigViewComponent
         if (!table.Success) return;
 
         ImGui.TableSetupColumn("On",       ImGuiTableColumnFlags.WidthFixed,   24f * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Keyword",  ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Mode",     ImGuiTableColumnFlags.WidthFixed,  110f * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Match",    ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Case",     ImGuiTableColumnFlags.WidthFixed,   40f * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Whole",    ImGuiTableColumnFlags.WidthFixed,   44f * ImGuiHelpers.GlobalScale);
         ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthFixed,  170f * ImGuiHelpers.GlobalScale);
         ImGui.TableSetupColumn("",         ImGuiTableColumnFlags.WidthFixed,   22f * ImGuiHelpers.GlobalScale);
         ImGui.TableHeadersRow();
@@ -147,12 +170,48 @@ public class CategorizerComponent : ConfigViewComponent
             }
 
             ImGui.TableNextColumn();
-            var kw = rule.Keyword;
+            var modeIdx = RuleToModeIndex(rule);
             ImGui.SetNextItemWidth(-1f);
-            if (ImGui.InputText($"###BKw{i}", ref kw, 100))
+            if (ImGui.Combo($"###BMode{i}", ref modeIdx, ModeNames, ModeNames.Length))
             {
-                rule.Keyword = kw;
+                ApplyModeIndex(rule, modeIdx);
                 ServiceContext.ConfigService.SaveConfig(Config);
+            }
+
+            ImGui.TableNextColumn();
+            if (rule.MatchMode == RuleMatchMode.Shorthand)
+            {
+                var avail = ImGui.GetContentRegionAvail().X;
+                var lfWidth = ImGui.CalcTextSize("lf").X + (8f * ImGuiHelpers.GlobalScale);
+                var halfWidth = (avail - lfWidth) * 0.5f;
+                var prim = rule.PrimaryToken;
+                ImGui.SetNextItemWidth(halfWidth);
+                if (ImGui.InputTextWithHint($"###BPrim{i}", "Primary", ref prim, 32))
+                {
+                    rule.PrimaryToken = prim;
+                    ServiceContext.ConfigService.SaveConfig(Config);
+                }
+                ImGui.SameLine();
+                ImGui.TextUnformatted("lf");
+                ImGui.SameLine();
+                var sec = rule.SecondaryToken;
+                ImGui.SetNextItemWidth(halfWidth);
+                if (ImGui.InputTextWithHint($"###BSec{i}", "Secondary", ref sec, 32))
+                {
+                    rule.SecondaryToken = sec;
+                    ServiceContext.ConfigService.SaveConfig(Config);
+                }
+            }
+            else
+            {
+                var kw = rule.Keyword;
+                ImGui.SetNextItemWidth(-1f);
+                var hint = rule.MatchMode == RuleMatchMode.Regex ? "Regex pattern..." : "Keyword...";
+                if (ImGui.InputTextWithHint($"###BKw{i}", hint, ref kw, 100))
+                {
+                    rule.Keyword = kw;
+                    ServiceContext.ConfigService.SaveConfig(Config);
+                }
             }
 
             ImGui.TableNextColumn();
@@ -163,15 +222,6 @@ public class CategorizerComponent : ConfigViewComponent
                 ServiceContext.ConfigService.SaveConfig(Config);
             }
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Case sensitive");
-
-            ImGui.TableNextColumn();
-            var ww = rule.WholeWord;
-            if (ImGui.Checkbox($"###BWw{i}", ref ww))
-            {
-                rule.WholeWord = ww;
-                ServiceContext.ConfigService.SaveConfig(Config);
-            }
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Whole word only");
 
             ImGui.TableNextColumn();
             var catIdx = categories.ToList().FindIndex(c => c.Id == (int)rule.CategoryId);
@@ -203,16 +253,31 @@ public class CategorizerComponent : ConfigViewComponent
         ImGui.TextUnformatted("Add rule:");
         ImGuiHelpers.ScaledDummy(2f);
 
-        ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-        ImGui.InputTextWithHint("###NewKw", "Keyword...", ref _newKeyword, 100);
+        ImGui.SetNextItemWidth(110f * ImGuiHelpers.GlobalScale);
+        ImGui.Combo("###NewMode", ref _newModeIndex, ModeNames, ModeNames.Length);
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Match mode");
+
+        ImGui.SameLine();
+        if (_newModeIndex == 3) // Shorthand
+        {
+            ImGui.SetNextItemWidth(90f * ImGuiHelpers.GlobalScale);
+            ImGui.InputTextWithHint("###NewPrim", "Primary", ref _newPrimaryToken, 32);
+            ImGui.SameLine();
+            ImGui.TextUnformatted("lf");
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(90f * ImGuiHelpers.GlobalScale);
+            ImGui.InputTextWithHint("###NewSec", "Secondary", ref _newSecondaryToken, 32);
+        }
+        else
+        {
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+            var hint = _newModeIndex == 2 ? "Regex pattern..." : "Keyword...";
+            ImGui.InputTextWithHint("###NewKw", hint, ref _newKeyword, 100);
+        }
 
         ImGui.SameLine();
         ImGui.Checkbox("Case##New", ref _newCaseSensitive);
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Case sensitive");
-
-        ImGui.SameLine();
-        ImGui.Checkbox("Whole##New", ref _newWholeWord);
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Whole word only");
 
         ImGui.SameLine();
         ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
@@ -222,24 +287,41 @@ public class CategorizerComponent : ConfigViewComponent
         using (ImRaii.PushFont(UiBuilder.IconFont))
             ImGui.TextUnformatted(FontAwesomeIcon.Plus.ToIconString());
 
+        var hasMatchInput = _newModeIndex == 3
+            ? !string.IsNullOrWhiteSpace(_newPrimaryToken)
+            : !string.IsNullOrWhiteSpace(_newKeyword);
+
         if (ImGui.IsItemClicked()
-            && !string.IsNullOrWhiteSpace(_newKeyword)
+            && hasMatchInput
             && _newCategoryIndex < categories.Count)
         {
             var cat = categories[_newCategoryIndex];
-            Config.CategorizerRules.Add(new CategoryRule
+            var rule = new CategoryRule
             {
-                Keyword             = _newKeyword.Trim(),
                 CaseSensitive       = _newCaseSensitive,
-                WholeWord           = _newWholeWord,
                 CategoryId          = (uint)cat.Id,
                 CategoryDisplayName = cat.Name,
                 Enabled             = true,
-            });
-            _newKeyword       = string.Empty;
-            _newCaseSensitive = false;
-            _newWholeWord     = false;
-            _newCategoryIndex = 0;
+            };
+            ApplyModeIndex(rule, _newModeIndex);
+
+            if (_newModeIndex == 3)
+            {
+                rule.PrimaryToken   = _newPrimaryToken.Trim();
+                rule.SecondaryToken = _newSecondaryToken.Trim();
+            }
+            else
+            {
+                rule.Keyword = _newKeyword.Trim();
+            }
+
+            Config.CategorizerRules.Add(rule);
+            _newKeyword         = string.Empty;
+            _newPrimaryToken    = string.Empty;
+            _newSecondaryToken  = string.Empty;
+            _newCaseSensitive   = false;
+            _newModeIndex       = 0;
+            _newCategoryIndex   = 0;
             ServiceContext.ConfigService.SaveConfig(Config);
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add rule");
