@@ -196,6 +196,7 @@ public static class PlateWatcher
 
                 Plugin.PluginLog.Information(
                     $"[PlateWatcher/Chat] Rule matched: keyword=\"{rule.Keyword}\" " +
+                    $"mode={rule.MatchMode} wholeWord={rule.WholeWord} " +
                     $"categoryId={rule.CategoryId} player=\"{playerName}\"@worldId={worldId}");
 
                 if (player == null)
@@ -350,6 +351,7 @@ public static class PlateWatcher
 
                 Plugin.PluginLog.Information(
                     $"[PlateWatcher] Rule matched: keyword=\"{rule.Keyword}\" " +
+                    $"mode={rule.MatchMode} wholeWord={rule.WholeWord} " +
                     $"categoryId={rule.CategoryId} player=\"{playerName}\"@worldId={worldId}");
 
                 if (player == null)
@@ -454,7 +456,11 @@ public static class PlateWatcher
                 return MatchesShorthand(bio, rule);
         }
 
-        if (rule.WholeWord)
+        // Single-character keywords in Substring mode are automatically treated as
+        // whole-word tokens. A bare substring search for "F" would match any bio
+        // containing that letter (e.g. "ILCBICEIBTIGFBISG"), which is never useful.
+        var effectiveWholeWord = rule.WholeWord || rule.Keyword.Length == 1;
+        if (effectiveWholeWord)
         {
             var opts = rule.CaseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
             // \b doesn't work for tokens ending in non-word chars like "F+", so use
