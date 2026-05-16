@@ -516,7 +516,8 @@ public static class PlateWatcher
     {
         left = right = string.Empty;
         if (string.IsNullOrEmpty(input)) return false;
-        var match = Regex.Match(input, @"\s+lf\s+", RegexOptions.IgnoreCase);
+        // Accepted separators (case-insensitive): " lf " and " for ".
+        var match = Regex.Match(input, @"\s+(?:lf|for)\s+", RegexOptions.IgnoreCase);
         if (!match.Success) return false;
         left  = input[..match.Index];
         right = input[(match.Index + match.Length)..];

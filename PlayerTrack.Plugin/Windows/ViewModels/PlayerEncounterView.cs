@@ -1,4 +1,6 @@
-﻿namespace PlayerTrack.Windows.ViewModels;
+﻿using PlayerTrack.Data;
+
+namespace PlayerTrack.Windows.ViewModels;
 
 public class PlayerEncounterView
 {
@@ -13,4 +15,6 @@ public class PlayerEncounterView
     public string Level { get; init; } = null!;
 
     public string Location { get; init; } = null!;
+
+    public LocationType LocationType { get; init; } = LocationType.None;
 }

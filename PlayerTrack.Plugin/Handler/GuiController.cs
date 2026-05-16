@@ -152,6 +152,21 @@ public static class GuiController
         Plugin.PluginLog.Verbose($"Entering GuiController.OnPlayerSelected(): {player.Id}");
         Presenter.SelectPlayer(player);
         Presenter.ShowPanel(PanelType.Player);
+
+        // Context-menu and other external triggers should open the main window
+        // if it's currently closed, but never close it on a second click.
+        if (IsCombinedView)
+        {
+            if (CombinedView is { IsOpen: false })
+                CombinedView.IsOpen = true;
+        }
+        else
+        {
+            if (PlayerListView is { IsOpen: false })
+                PlayerListView.IsOpen = true;
+            if (PanelView is { IsOpen: false })
+                PanelView.IsOpen = true;
+        }
     }
 
     private static void OnConfigWindowToggled()

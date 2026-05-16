@@ -20,49 +20,18 @@ public class PlayerSummaryComponent : ViewComponent
     private const float SectionSpace = 2.8f;
 
     private readonly IMainPresenter Presenter;
-    private float[] CurrentOffsets = [];
+    private float CategoryTagSplit;
     private int SelectedTagIndex;
     private int SelectedCategoryIndex;
     private float AssignedChildHeight;
-    private bool IsLanguageChanged = true;
 
     public PlayerSummaryComponent(IMainPresenter presenter)
     {
         Presenter = presenter;
-        Plugin.PluginInterface.LanguageChanged += _ => IsLanguageChanged = true;
     }
 
-    // Labels for the two new encounter-time rows.
-    private const string TotalTimeLabel   = "Total Time";
-    private const string LongestEncLabel  = "Longest Enc.";
-
-    public void CalcSize()
-    {
-        var offsets = new float[3];
-        const string maxLengthName = "WWWWW";
-
-        var maxNameWidth         = Math.Max(ImGui.CalcTextSize(Language.Name).X,      ImGui.CalcTextSize(maxLengthName).X);
-        var maxHomeWorldWidth    = Math.Max(ImGui.CalcTextSize(Language.Homeworld).X,  ImGui.CalcTextSize(maxLengthName).X);
-        var maxLodestoneWidth    = Math.Max(ImGui.CalcTextSize(Language.Lodestone).X,  ImGui.CalcTextSize(maxLengthName).X);
-        var maxTotalTimeWidth    = Math.Max(ImGui.CalcTextSize(TotalTimeLabel).X,      ImGui.CalcTextSize(maxLengthName).X);
-        var maxLongestEncWidth   = Math.Max(ImGui.CalcTextSize(LongestEncLabel).X,     ImGui.CalcTextSize(maxLengthName).X);
-
-        var maxLastSeenWidth     = Math.Max(ImGui.CalcTextSize(Language.LastSeen).X,     ImGui.CalcTextSize(maxLengthName).X);
-        var maxSeenCountWidth    = Math.Max(ImGui.CalcTextSize(Language.SeenCount).X,    ImGui.CalcTextSize(maxLengthName).X);
-        var maxLastLocationWidth = Math.Max(ImGui.CalcTextSize(Language.LastLocation).X, ImGui.CalcTextSize(maxLengthName).X);
-        var maxFirstSeenWidth    = Math.Max(ImGui.CalcTextSize(Language.FirstSeen).X,    ImGui.CalcTextSize(maxLengthName).X);
-
-        var maxOffset0Width = Math.Max(maxNameWidth,      Math.Max(maxHomeWorldWidth,
-                              Math.Max(maxLodestoneWidth, Math.Max(maxTotalTimeWidth, maxLongestEncWidth))));
-        var maxOffset1Width = Math.Max(maxLastSeenWidth, Math.Max(maxSeenCountWidth, maxLastLocationWidth));
-        var maxOffset2Width = maxFirstSeenWidth;
-
-        offsets[0] = maxOffset0Width + (30f * ImGuiHelpers.GlobalScale);
-        offsets[1] = offsets[0] + maxOffset1Width + (60f * ImGuiHelpers.GlobalScale);
-        offsets[2] = offsets[1] + maxOffset2Width + (60f * ImGuiHelpers.GlobalScale);
-
-        CurrentOffsets = offsets;
-    }
+    private const string TotalTimeLabel  = "Total Time";
+    private const string LongestEncLabel = "Longest Enc.";
 
     public override void Draw()
     {
@@ -70,29 +39,113 @@ public class PlayerSummaryComponent : ViewComponent
         if (player == null)
             return;
 
-        if (IsLanguageChanged)
-        {
-            CalcSize();
-            IsLanguageChanged = false;
-        }
-
         using var child = ImRaii.Child("###PlayerSummaryPlayer", new Vector2(-1, 0), false);
         if (!child.Success)
             return;
 
-        DrawInfoStatHeadings();
-        DrawName(player);
-        DrawFirstSeen(player);
-        DrawHomeworld(player);
-        DrawLastSeen(player);
-        DrawTotalEncounterTime(player);
-        DrawLastLocation(player);
-        DrawLongestEncounterTime(player);
-        DrawSeenCount(player);
+        // Recompute the categories/tags split each frame so it tracks window resizes.
+        CategoryTagSplit = ImGui.GetContentRegionAvail().X * 0.5f;
+
+        DrawCenteredHeader(player);
+        DrawCenteredStats(player);
+
+        // Requested blank line between the name block and the rest.
+        ImGuiHelpers.ScaledDummy(new Vector2(0, 10f));
+
         DrawCategoryTagHeadings();
         DrawCategoryTagAssignment(player);
         DrawCategoryTagAssignments(player);
         DrawNotes(player);
+    }
+
+    private static void DrawCenteredHeader(PlayerView player)
+    {
+        var name = string.IsNullOrEmpty(player.Name) ? "?" : player.Name;
+        var world = string.IsNullOrEmpty(player.HomeWorld) ? "?" : player.HomeWorld;
+        var display = $"{name}@{world}";
+
+        var textSize = ImGui.CalcTextSize(display);
+        var ximAvailable = XIVInstantMessengerProvider.IsAvailable();
+        var iconBtnHeight = ImGui.GetFrameHeight();
+        var infoIconWidth = HasHistoryTooltip(player) ? ImGui.CalcTextSize(FontAwesomeIcon.InfoCircle.ToIconString()).X + ImGui.GetStyle().ItemSpacing.X : 0f;
+
+        // Estimate button widths so we can pre-center the whole row.
+        var btnWidth = MeasureIconBtnWidth();
+        var totalButtonsWidth = (ximAvailable ? btnWidth : 0f) + btnWidth;
+        var totalWidth = textSize.X + infoIconWidth + ImGui.GetStyle().ItemSpacing.X + totalButtonsWidth;
+
+        var avail = ImGui.GetContentRegionAvail().X;
+        var startX = ImGui.GetCursorPosX() + Math.Max(0f, (avail - totalWidth) * 0.5f);
+
+        ImGui.SetCursorPosX(startX);
+
+        // Name@World text + optional info-icon (with combined tooltip for previous names/worlds).
+        using (ImRaii.Group())
+        {
+            ImGui.TextUnformatted(display);
+            if (HasHistoryTooltip(player))
+            {
+                ImGui.SameLine();
+                using (ImRaii.PushFont(UiBuilder.IconFont))
+                    Helper.TextColored(ImGuiColors.DalamudYellow, FontAwesomeIcon.InfoCircle.ToIconString());
+            }
+        }
+
+        if (HasHistoryTooltip(player) && ImGui.IsItemHovered())
+        {
+            var tooltip = BuildHistoryTooltip(player);
+            if (!string.IsNullOrEmpty(tooltip))
+                ImGui.SetTooltip(tooltip);
+        }
+
+        if (ximAvailable)
+        {
+            ImGui.SameLine();
+            DrawXimButton(player);
+        }
+
+        ImGui.SameLine();
+        DrawPlayerSearchButton(player);
+    }
+
+    private static float MeasureIconBtnWidth()
+    {
+        var pad = ImGui.GetStyle().FramePadding.X * 2f;
+        using var f = ImRaii.PushFont(UiBuilder.IconFont);
+        return ImGui.CalcTextSize(FontAwesomeIcon.Search.ToIconString()).X + pad;
+    }
+
+    private static bool HasHistoryTooltip(PlayerView player) =>
+        !string.IsNullOrEmpty(player.PreviousNames) || !string.IsNullOrEmpty(player.PreviousWorlds);
+
+    private static string BuildHistoryTooltip(PlayerView player)
+    {
+        var parts = new System.Collections.Generic.List<string>();
+        if (!string.IsNullOrEmpty(player.PreviousNames))
+            parts.Add(string.Format(Language.PreviouslyKnownAs, player.PreviousNames));
+        if (!string.IsNullOrEmpty(player.PreviousWorlds))
+            parts.Add(string.Format(Language.PreviouslyOn, player.PreviousWorlds));
+        return string.Join("\n", parts);
+    }
+
+    private static void DrawCenteredStats(PlayerView player)
+    {
+        var avail = ImGui.GetContentRegionAvail().X;
+        var half = avail * 0.5f;
+        var startX = ImGui.GetCursorPosX();
+
+        var total = $"{TotalTimeLabel}: {player.TotalEncounterTime}";
+        var longest = $"{LongestEncLabel}: {player.LongestEncounterTime}";
+
+        var totalSize = ImGui.CalcTextSize(total);
+        var longestSize = ImGui.CalcTextSize(longest);
+
+        ImGui.SetCursorPosX(startX + Math.Max(0f, (half - totalSize.X) * 0.5f));
+        ImGui.TextUnformatted(total);
+
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(startX + half + Math.Max(0f, (half - longestSize.X) * 0.5f));
+        ImGui.TextUnformatted(longest);
     }
 
     private void DrawNotes(PlayerView player)
@@ -102,13 +155,11 @@ public class PlayerSummaryComponent : ViewComponent
         var leftWidth = (availWidth - itemSpacing) * 0.5f;
         var areaHeight = -1f - (5f * ImGuiHelpers.GlobalScale);
 
-        // Headings row: "Notes" on the left, "Plate Bio" aligned to the right half.
         Helper.TextColored(ImGuiColors.DalamudViolet, Language.Notes);
         ImGui.SameLine();
         ImGui.SetCursorPosX(leftWidth + itemSpacing);
         Helper.TextColored(ImGuiColors.DalamudViolet, "Plate Bio");
 
-        // Left child: editable notes.
         using (ImRaii.Child("###PlayerNotes", new Vector2(leftWidth, areaHeight), false))
         {
             var flags = ImGuiInputTextFlags.AllowTabInput;
@@ -125,7 +176,6 @@ public class PlayerSummaryComponent : ViewComponent
 
         ImGui.SameLine();
 
-        // Right child: bio history, read-only, newest first.
         using (ImRaii.Child("###PlayerBioHistory", new Vector2(-1, areaHeight), false))
         {
             DrawBioHistory(player);
@@ -160,7 +210,8 @@ public class PlayerSummaryComponent : ViewComponent
     private void DrawCategoryTagAssignments(PlayerView player)
     {
         DrawAssignedCategories(player);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(CategoryTagSplit);
         DrawAssignedTags(player);
     }
 
@@ -168,7 +219,8 @@ public class PlayerSummaryComponent : ViewComponent
     {
         CalculateAssignedChildHeight(player);
         DrawCategoryCombo(player);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(CategoryTagSplit);
         DrawTagCombo(player);
         ImGuiHelpers.ScaledDummy(1f);
     }
@@ -177,118 +229,9 @@ public class PlayerSummaryComponent : ViewComponent
     {
         ImGuiHelpers.ScaledDummy(SectionSpace);
         Helper.TextColored(ImGuiColors.DalamudViolet, Language.Categories);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
-        Helper.TextColored(ImGuiColors.DalamudViolet, Language.Tags);
-    }
-
-    private void DrawTotalEncounterTime(PlayerView player)
-    {
-        ImGui.TextUnformatted(TotalTimeLabel);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-        ImGui.TextUnformatted(player.TotalEncounterTime);
-    }
-
-    private void DrawLongestEncounterTime(PlayerView player)
-    {
-        ImGui.TextUnformatted(LongestEncLabel);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-        ImGui.TextUnformatted(player.LongestEncounterTime);
-    }
-
-    private void DrawSeenCount(PlayerView player)
-    {
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
-        ImGui.TextUnformatted(Language.SeenCount);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[2]);
-        ImGui.TextUnformatted(player.SeenCount);
-    }
-
-    private void DrawLastLocation(PlayerView player)
-    {
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
-        ImGui.TextUnformatted(Language.LastLocation);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[2]);
-        ImGui.TextUnformatted(player.LastLocation);
-    }
-
-    private void DrawLastSeen(PlayerView player)
-    {
-        ImGui.TextUnformatted(Language.LastSeen);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[2]);
-        ImGui.TextUnformatted(player.LastSeen);
-    }
-
-    private void DrawHomeworld(PlayerView player)
-    {
-        ImGui.TextUnformatted(Language.Homeworld);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-        if (!string.IsNullOrEmpty(player.PreviousWorlds))
-        {
-            using (ImRaii.Group())
-            {
-                ImGui.TextUnformatted(player.HomeWorld);
-                ImGui.SameLine();
-                using (ImRaii.PushFont(UiBuilder.IconFont))
-                    Helper.TextColored(ImGuiColors.DalamudYellow, FontAwesomeIcon.InfoCircle.ToIconString());
-            }
-
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(string.Format(Language.PreviouslyOn, player.PreviousWorlds));
-        }
-        else
-        {
-            ImGui.TextUnformatted(player.HomeWorld);
-        }
-
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
-    }
-
-    private void DrawFirstSeen(PlayerView player)
-    {
-        ImGui.TextUnformatted(Language.FirstSeen);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[2]);
-        ImGui.TextUnformatted(player.FirstSeen);
-    }
-
-    private void DrawName(PlayerView player)
-    {
-        ImGui.TextUnformatted(Language.Name);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[0]);
-
-        var ximAvailable = XIVInstantMessengerProvider.IsAvailable();
-
-        if (!string.IsNullOrEmpty(player.PreviousNames))
-        {
-            using (ImRaii.Group())
-            {
-                ImGui.TextUnformatted(player.Name);
-                ImGui.SameLine();
-                using (ImRaii.PushFont(UiBuilder.IconFont))
-                    Helper.TextColored(ImGuiColors.DalamudYellow, FontAwesomeIcon.InfoCircle.ToIconString());
-            }
-
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(string.Format(Language.PreviouslyKnownAs, player.PreviousNames));
-        }
-        else
-        {
-            ImGui.TextUnformatted(player.Name);
-        }
-
-        if (ximAvailable)
-        {
-            ImGui.SameLine();
-            DrawXimButton(player);
-        }
         ImGui.SameLine();
-        DrawPlayerSearchButton(player);
-
-        var spacing = ImGui.GetStyle().ItemSpacing.X;
-        var rightX = ImGui.GetItemRectMax().X - ImGui.GetWindowPos().X;
-        if (rightX + spacing >= CurrentOffsets[1])
-            ImGui.SameLine(0f, spacing);
-        else
-            ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
+        ImGui.SetCursorPosX(CategoryTagSplit);
+        Helper.TextColored(ImGuiColors.DalamudViolet, Language.Tags);
     }
 
     private static void DrawXimButton(PlayerView player)
@@ -312,26 +255,22 @@ public class PlayerSummaryComponent : ViewComponent
         }
 
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Player Search (/psearch)");
+            ImGui.SetTooltip("Player Search (/search forename)");
     }
 
     private static void OpenPlayerSearch(PlayerView player)
     {
         try
         {
-            Plugin.CommandManager.ProcessCommand($"/psearch {player.Name}");
+            var forename = (player.Name ?? string.Empty).Split(' ', 2, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(forename))
+                return;
+            Utils.SendGameChatCommand($"/search forename \"{forename}\"");
         }
         catch (Exception ex)
         {
-            Plugin.PluginLog.Warning(ex, "[PlayerSearch] Failed to execute /search command.");
+            Plugin.PluginLog.Warning(ex, "[PlayerSearch] Failed to submit /search command.");
         }
-    }
-
-    private void DrawInfoStatHeadings()
-    {
-        Helper.TextColored(ImGuiColors.DalamudViolet, Language.PlayerInfo);
-        ImGuiHelpers.ScaledRelativeSameLine(CurrentOffsets[1]);
-        Helper.TextColored(ImGuiColors.DalamudViolet, Language.PlayerStats);
     }
 
     private void CalculateAssignedChildHeight(PlayerView player)
@@ -387,9 +326,7 @@ public class PlayerSummaryComponent : ViewComponent
 
     private void DrawAssignedCategories(PlayerView player)
     {
-        // Width is capped at the Tags column boundary so category badges
-        // never overlap the Tags child that follows on the same line.
-        using var child = ImRaii.Child("AssignedCategories", new Vector2(CurrentOffsets[1], AssignedChildHeight), false);
+        using var child = ImRaii.Child("AssignedCategories", new Vector2(CategoryTagSplit - ImGui.GetStyle().ItemSpacing.X, AssignedChildHeight), false);
         if (!child.Success)
             return;
 

@@ -57,7 +57,7 @@ public class PlayerComponent
                 PlayerEncounterComponent.Draw();
         }
 
-        using (var tabItem = ImRaii.TabItem(Language.History))
+        using (var tabItem = ImRaii.TabItem("Data"))
         {
             if (tabItem.Success)
                 PlayerHistoryComponent.Draw();

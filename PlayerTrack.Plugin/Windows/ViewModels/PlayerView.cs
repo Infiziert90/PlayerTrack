@@ -11,6 +11,8 @@ public class PlayerView
 
     public string HomeWorld { get; set; } = null!;
 
+    public string DataCenter { get; set; } = null!;
+
     public string FreeCompany { get; set; } = null!;
 
     public uint LodestoneId { get; set; }

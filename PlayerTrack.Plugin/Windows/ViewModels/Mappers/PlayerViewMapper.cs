@@ -25,6 +25,7 @@ public static class PlayerViewMapper
             PrimaryCategoryId = player.PrimaryCategoryId,
             PlayerConfig = player.PlayerConfig,
             HomeWorld = GetHomeWorld(player.WorldId),
+            DataCenter = GetDataCenter(player.WorldId),
             FreeCompany = GetFreeCompany(player.FreeCompany),
             LodestoneId = player.LodestoneId,
             Appearance = GetAppearance(player.Customize),
@@ -56,6 +57,13 @@ public static class PlayerViewMapper
     {
         var worldName = Sheets.GetWorldNameById(worldId);
         return !string.IsNullOrEmpty(worldName) ? worldName : Na;
+    }
+
+    private static string GetDataCenter(uint worldId)
+    {
+        if (worldId == 0) return Na;
+        var dc = Sheets.GetDataCenterNameByWorldId(worldId);
+        return !string.IsNullOrEmpty(dc) ? dc : Na;
     }
 
     private static string GetFreeCompany(KeyValuePair<FreeCompanyState, string> freeCompany)
@@ -150,12 +158,15 @@ public static class PlayerViewMapper
 
             playerView.Encounters.Add(new PlayerEncounterView
             {
-                Id       = pEnc.Id,
-                Time     = pEnc.Created.ToTimeSpan(),
-                Duration = durationMs.ToDuration(),
-                Job      = Sheets.ClassJobs[pEnc.JobId].Code,
-                Level    = pEnc.JobLvl.ToString(),
-                Location = GetLastLocation(enc.TerritoryTypeId)
+                Id           = pEnc.Id,
+                Time         = pEnc.Created.ToTimeSpan(),
+                Duration     = durationMs.ToDuration(),
+                Job          = Sheets.ClassJobs[pEnc.JobId].Code,
+                Level        = pEnc.JobLvl.ToString(),
+                Location     = GetLastLocation(enc.TerritoryTypeId),
+                LocationType = Sheets.Locations.TryGetValue(enc.TerritoryTypeId, out var loc)
+                    ? loc.LocationType
+                    : Data.LocationType.None,
             });
         }
 
