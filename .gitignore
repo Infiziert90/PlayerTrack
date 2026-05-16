@@ -397,3 +397,4 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 .DS_Store
+.claude/worktrees/musing-buck-49d2b4/
