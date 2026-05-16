@@ -265,4 +265,45 @@ public class VisibilityService
 
     private static bool IsSyncedEntry(string reason) => reason.Equals(Reason, StringComparison.OrdinalIgnoreCase);
 
-    p
+    private Dictionary<string, VisibilityEntry> GetVisibilityPlayers(VisibilityType visibilityType)
+    {
+        List<string> rawVisibilityEntries;
+        switch (visibilityType)
+        {
+            case VisibilityType.None:
+                return new Dictionary<string, VisibilityEntry>();
+            case VisibilityType.Voidlist:
+                rawVisibilityEntries = VisibilityConsumer.GetVoidListEntries().ToList();
+                break;
+            case VisibilityType.Whitelist:
+                rawVisibilityEntries = VisibilityConsumer.GetWhiteListEntries().ToList();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(visibilityType), visibilityType, null);
+        }
+
+        Dictionary<string, VisibilityEntry> visibilityEntries = new();
+        if (rawVisibilityEntries.Count == 0)
+            return visibilityEntries;
+
+        foreach (var voidListEntry in rawVisibilityEntries)
+        {
+            try
+            {
+                var parts = voidListEntry.Split(" ");
+                if (parts.Length != 4)
+                    continue;
+
+                var visibilityEntry = new VisibilityEntry { Name = string.Concat(parts[0], " ", parts[1]), HomeWorldId = Convert.ToUInt32(parts[2]), Reason = parts[3], };
+                visibilityEntry.Key = PlayerKeyBuilder.Build(visibilityEntry.Name, visibilityEntry.HomeWorldId);
+                visibilityEntries.Add(visibilityEntry.Key, visibilityEntry);
+            }
+            catch (Exception ex)
+            {
+                Plugin.PluginLog.Error(ex, "Failed to load visibility entry.");
+            }
+        }
+
+        return visibilityEntries;
+    }
+}

@@ -1,5 +1,7 @@
 ﻿using System;
 using Dalamud.Plugin;
+using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using Lumina.Text.ReadOnly;
 using System.Collections.Generic;
 using System.Globalization;
@@ -103,6 +105,31 @@ public static class Utils
             hue = 4 + ((r - g) / delta);
 
         return ((hue * 60) + 360) % 360;
+    }
+
+    /// <summary>
+    /// Submit a command to the game's chat box as if the user typed it.
+    /// Used for game-side commands (e.g. /search) that Dalamud's CommandManager
+    /// does not dispatch.
+    /// </summary>
+    public static unsafe void SendGameChatCommand(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command)) return;
+        if (command.Length > 500) return;
+
+        var ui = UIModule.Instance();
+        if (ui == null) return;
+
+        var utf8 = Utf8String.FromString(command);
+        if (utf8 == null) return;
+        try
+        {
+            ui->ProcessChatBoxEntry(utf8, 0);
+        }
+        finally
+        {
+            utf8->Dtor(true);
+        }
     }
 
     /// <summary>

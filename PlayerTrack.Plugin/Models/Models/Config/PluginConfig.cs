@@ -68,6 +68,8 @@ public class PluginConfig : IPluginConfig
 
     public bool UseCtrlNewLine { get; set; } = false;
 
+    public bool ShowStatsForNerds { get; set; } = false;
+
     public List<FontAwesomeIcon> Icons { get; set; } =
     [
         FontAwesomeIcon.User,
