@@ -400,7 +400,25 @@ namespace PlayerTrack.Resource {
                 return ResourceManager.GetString("CategorySpecificSetting", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Chat.
+        /// </summary>
+        internal static string Chat {
+            get {
+                return ResourceManager.GetString("Chat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Channel.
+        /// </summary>
+        internal static string ChatChannel {
+            get {
+                return ResourceManager.GetString("ChatChannel", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Close Player.
         /// </summary>
@@ -2668,7 +2686,16 @@ namespace PlayerTrack.Resource {
                 return ResourceManager.GetString("Upgrade", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Use Custom Chat Channel.
+        /// </summary>
+        internal static string UseCustomChatChannel {
+            get {
+                return ResourceManager.GetString("UseCustomChatChannel", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Verified.
         /// </summary>

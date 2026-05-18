@@ -114,6 +114,12 @@
     <data name="CategorySpecificSetting" xml:space="preserve">
         <value>Inherited from the category {0}</value>
     </data>
+    <data name="Chat" xml:space="preserve">
+        <value>Chat</value>
+    </data>
+    <data name="ChatChannel" xml:space="preserve">
+        <value>Chat Channel</value>
+    </data>
     <data name="ClosePlayer" xml:space="preserve">
         <value>Close Player</value>
     </data>
@@ -863,6 +869,9 @@
     </data>
     <data name="Upgrade" xml:space="preserve">
         <value>Upgrade</value>
+    </data>
+    <data name="UseCustomChatChannel" xml:space="preserve">
+        <value>Use Custom Chat Channel</value>
     </data>
     <data name="Verified" xml:space="preserve">
         <value>Verified</value>
