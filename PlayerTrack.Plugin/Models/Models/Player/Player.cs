@@ -21,6 +21,10 @@ public class Player : IComparable<Player>, IEquatable<Player>
 
     public long LastAlertSent { get; set; }
 
+    public long LastNameChangeAlertSent { get; set; }
+
+    public long LastWorldChangeAlertSent { get; set; }
+
     public long FirstSeen { get; set; }
 
     public long LastSeen { get; set; }
@@ -192,6 +196,8 @@ public class Player : IComparable<Player>, IEquatable<Player>
 
         // use the most recent timestamp
         LastAlertSent = Math.Max(LastAlertSent, player.LastAlertSent);
+        LastNameChangeAlertSent = Math.Max(LastNameChangeAlertSent, player.LastNameChangeAlertSent);
+        LastWorldChangeAlertSent = Math.Max(LastWorldChangeAlertSent, player.LastWorldChangeAlertSent);
         LastSeen = Math.Max(LastSeen, player.LastSeen);
 
         // use the oldest timestamp

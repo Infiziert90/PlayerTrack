@@ -85,6 +85,27 @@ public class PlayerConfigService
             x => x.AlertNameChange).PropertyValue;
     }
 
+    public static long GetProximityAlertFrequency(Player player) =>
+        ExtractPlayerProperty(
+            GetDefaultConfig(),
+            player.PlayerConfig,
+            player.GetCategoryPlayerConfigs(),
+            x => x.AlertProximityFrequency).PropertyValue;
+
+    public static long GetWorldTransferAlertFrequency(Player player) =>
+        ExtractPlayerProperty(
+            GetDefaultConfig(),
+            player.PlayerConfig,
+            player.GetCategoryPlayerConfigs(),
+            x => x.AlertWorldTransferFrequency).PropertyValue;
+
+    public static long GetNameChangeAlertFrequency(Player player) =>
+        ExtractPlayerProperty(
+            GetDefaultConfig(),
+            player.PlayerConfig,
+            player.GetCategoryPlayerConfigs(),
+            x => x.AlertNameChangeFrequency).PropertyValue;
+
     public static bool GetNameplateShowInOverworld(Player player)
     {
         Plugin.PluginLog.Verbose($"Entering PlayerConfigService.GetNameplateShowInOverworld(): {player.Name}");

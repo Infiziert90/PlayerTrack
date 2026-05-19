@@ -34,6 +34,12 @@ public class PlayerConfigDTO : DTO
 
     public string alert_proximity { get; set; } = string.Empty;
 
+    public string alert_name_change_frequency { get; set; } = string.Empty;
+
+    public string alert_world_transfer_frequency { get; set; } = string.Empty;
+
+    public string alert_proximity_frequency { get; set; } = string.Empty;
+
     public string alert_format_include_category { get; set; } = string.Empty;
 
     public string alert_format_include_custom_title { get; set; } = string.Empty;

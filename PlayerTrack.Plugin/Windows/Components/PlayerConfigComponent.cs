@@ -150,11 +150,20 @@ public static class PlayerConfigComponent
                 DrawCheckbox(Language.NameChangeAlert, playerConfigSet, pc => pc.AlertNameChange,
                              ref playerConfigSet.CurrentPlayerConfig.AlertNameChange,
                              ref playerConfigSet.CurrentPlayerConfig.IsChanged);
+                DrawMinutesInput("Name Change Cooldown (min)", playerConfigSet, pc => pc.AlertNameChangeFrequency,
+                             ref playerConfigSet.CurrentPlayerConfig.AlertNameChangeFrequency,
+                             ref playerConfigSet.CurrentPlayerConfig.IsChanged);
                 DrawCheckbox(Language.WorldTransferAlert, playerConfigSet, pc => pc.AlertWorldTransfer,
                              ref playerConfigSet.CurrentPlayerConfig.AlertWorldTransfer,
                              ref playerConfigSet.CurrentPlayerConfig.IsChanged);
+                DrawMinutesInput("World Transfer Cooldown (min)", playerConfigSet, pc => pc.AlertWorldTransferFrequency,
+                             ref playerConfigSet.CurrentPlayerConfig.AlertWorldTransferFrequency,
+                             ref playerConfigSet.CurrentPlayerConfig.IsChanged);
                 DrawCheckbox(Language.ProximityAlert, playerConfigSet, pc => pc.AlertProximity,
                              ref playerConfigSet.CurrentPlayerConfig.AlertProximity,
+                             ref playerConfigSet.CurrentPlayerConfig.IsChanged);
+                DrawMinutesInput("Proximity Cooldown (min)", playerConfigSet, pc => pc.AlertProximityFrequency,
+                             ref playerConfigSet.CurrentPlayerConfig.AlertProximityFrequency,
                              ref playerConfigSet.CurrentPlayerConfig.IsChanged);
             }
         }
@@ -195,6 +204,32 @@ public static class PlayerConfigComponent
         {
             config.InheritOverride = playerConfigSet.PlayerConfigType == PlayerConfigType.Default ? InheritOverride.None : InheritOverride.Override;
             config.Value = boolValue;
+            isChanged = true;
+        }
+    }
+
+    private static void DrawMinutesInput<T>(
+        string key,
+        PlayerConfigSet playerConfigSet,
+        Func<PlayerConfig, ConfigValue<T>> propertySelector,
+        ref ConfigValue<long> config,
+        ref bool isChanged)
+    {
+        var extractedProperty = PlayerConfigService.ExtractProperty(playerConfigSet, propertySelector);
+        if (extractedProperty.PropertyValue is not long longValue)
+            return;
+
+        DrawSourceIndicator(playerConfigSet.PlayerConfigType, extractedProperty.PlayerConfigType, extractedProperty.CategoryId);
+        DrawInheritOverrideCombo(key, playerConfigSet.PlayerConfigType, ref config.InheritOverride, ref isChanged);
+
+        var minutes = (int)(longValue / 60000L);
+        ImGui.SetNextItemWidth(Helper.CalcScaledComboWidth(120f));
+        if (ImGui.InputInt(key, ref minutes))
+        {
+            if (minutes < 0)
+                minutes = 0;
+            config.InheritOverride = playerConfigSet.PlayerConfigType == PlayerConfigType.Default ? InheritOverride.None : InheritOverride.Override;
+            config.Value = (long)minutes * 60000L;
             isChanged = true;
         }
     }

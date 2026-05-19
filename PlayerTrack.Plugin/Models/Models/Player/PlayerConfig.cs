@@ -21,6 +21,9 @@ public class PlayerConfig
     public ConfigValue<bool> AlertNameChange;
     public ConfigValue<bool> AlertWorldTransfer;
     public ConfigValue<bool> AlertProximity;
+    public ConfigValue<long> AlertNameChangeFrequency;
+    public ConfigValue<long> AlertWorldTransferFrequency;
+    public ConfigValue<long> AlertProximityFrequency;
     public ConfigValue<bool> AlertFormatIncludeCategory;
     public ConfigValue<bool> AlertFormatIncludeCustomTitle;
     public ConfigValue<VisibilityType> VisibilityType;
@@ -44,6 +47,9 @@ public class PlayerConfig
         AlertNameChange = new ConfigValue<bool>(inheritOverride, true);
         AlertWorldTransfer = new ConfigValue<bool>(inheritOverride, true);
         AlertProximity = new ConfigValue<bool>(inheritOverride, false);
+        AlertNameChangeFrequency = new ConfigValue<long>(inheritOverride, 300000);
+        AlertWorldTransferFrequency = new ConfigValue<long>(inheritOverride, 300000);
+        AlertProximityFrequency = new ConfigValue<long>(inheritOverride, 14400000);
         AlertFormatIncludeCategory = new ConfigValue<bool>(inheritOverride, true);
         AlertFormatIncludeCustomTitle = new ConfigValue<bool>(inheritOverride, true);
         VisibilityType = new ConfigValue<VisibilityType>(inheritOverride, Models.VisibilityType.None);

@@ -8,6 +8,10 @@ public class PlayerDTO : DTO
 {
     public long last_alert_sent { get; set; }
 
+    public long last_name_change_alert_sent { get; set; }
+
+    public long last_world_change_alert_sent { get; set; }
+
     public long last_seen { get; set; }
     
     public long first_seen { get; set; }

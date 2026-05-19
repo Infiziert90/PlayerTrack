@@ -30,6 +30,9 @@ public class PlayerConfigMappingProfile : Profile
             .ForMember(dest => dest.alert_name_change, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertNameChange)))
             .ForMember(dest => dest.alert_world_transfer, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertWorldTransfer)))
             .ForMember(dest => dest.alert_proximity, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertProximity)))
+            .ForMember(dest => dest.alert_name_change_frequency, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertNameChangeFrequency)))
+            .ForMember(dest => dest.alert_world_transfer_frequency, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertWorldTransferFrequency)))
+            .ForMember(dest => dest.alert_proximity_frequency, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertProximityFrequency)))
             .ForMember(dest => dest.alert_format_include_category, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertFormatIncludeCategory)))
             .ForMember(dest => dest.alert_format_include_custom_title, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.AlertFormatIncludeCustomTitle)))
             .ForMember(dest => dest.visibility_type, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.VisibilityType)));
@@ -55,6 +58,9 @@ public class PlayerConfigMappingProfile : Profile
             .ForMember(dest => dest.AlertNameChange, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<bool>>(src.alert_name_change)))
             .ForMember(dest => dest.AlertWorldTransfer, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<bool>>(src.alert_world_transfer)))
             .ForMember(dest => dest.AlertProximity, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<bool>>(src.alert_proximity)))
+            .ForMember(dest => dest.AlertNameChangeFrequency, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<long>>(src.alert_name_change_frequency)))
+            .ForMember(dest => dest.AlertWorldTransferFrequency, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<long>>(src.alert_world_transfer_frequency)))
+            .ForMember(dest => dest.AlertProximityFrequency, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<long>>(src.alert_proximity_frequency)))
             .ForMember(dest => dest.AlertFormatIncludeCategory, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<bool>>(src.alert_format_include_category)))
             .ForMember(dest => dest.AlertFormatIncludeCustomTitle, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<bool>>(src.alert_format_include_custom_title)))
             .ForMember(dest => dest.VisibilityType, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ConfigValue<VisibilityType>>(src.visibility_type)));
